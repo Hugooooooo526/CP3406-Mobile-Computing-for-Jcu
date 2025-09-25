@@ -23,7 +23,7 @@ The app is designed to help students balance their **academic** and **personal**
 ---
 
 ## 👨‍🏫 Lecturer Information  
-- Lecturer GitHub: [Lum-KumMeng] [maxlum78@hotmail.com] 
+- Lecturer GitHub: [@Lum-KumMeng] [maxlum78@hotmail.com] 
 
 ---
 
