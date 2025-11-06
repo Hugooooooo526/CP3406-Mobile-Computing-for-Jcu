@@ -7,6 +7,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -41,31 +42,32 @@ private val LightColorScheme = lightColorScheme(
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryGreenLight,
-    onPrimary = PrimaryGreenDark,
-    primaryContainer = PrimaryGreenDark,
-    onPrimaryContainer = PrimaryContainer,
+    primary = DarkPrimaryGreen,           // 明亮绿色
+    onPrimary = Color(0xFF003300),        // 深色文字在主色上
+    primaryContainer = DarkPrimaryContainer, // 深绿色容器
+    onPrimaryContainer = DarkPrimaryGreenLight,
     
-    secondary = ProgressGreenEnd,
-    onSecondary = PrimaryGreenDark,
-    secondaryContainer = PrimaryGreenDark,
-    onSecondaryContainer = SecondaryContainer,
+    secondary = DarkPrimaryGreenDark,     // 次级绿色
+    onSecondary = Color(0xFF003300),
+    secondaryContainer = DarkSecondaryContainer,
+    onSecondaryContainer = DarkPrimaryGreenLight,
     
     tertiary = PersonalOrangeLight,
-    onTertiary = PrimaryGreenDark,
+    onTertiary = Color(0xFF003300),
     
     error = ErrorRed,
     onError = SurfaceWhite,
     
-    background = TextPrimary,
-    onBackground = SurfaceWhite,
+    background = DarkBackground,          // 深灰背景 #121212
+    onBackground = DarkTextPrimary,       // 浅色文字
     
-    surface = TextPrimary,
-    onSurface = SurfaceWhite,
-    surfaceVariant = PrimaryGreenDark,
-    onSurfaceVariant = OutlineGray,
+    surface = DarkSurface,                // 深灰表面 #1E1E1E
+    onSurface = DarkTextPrimary,          // 浅色文字
+    surfaceVariant = DarkSurfaceVariant,  // 变体表面
+    onSurfaceVariant = DarkTextSecondary, // 次级浅色文字
     
-    outline = OutlineGray
+    outline = DarkOutline,
+    outlineVariant = DarkOutlineVariant
 )
 
 @Composable

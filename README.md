@@ -18,6 +18,16 @@ The app helps students manage study time through Pomodoro techniques, self-refle
 | 🧑‍🤝‍🧑 **Heist Group** | 3-5 person group collaboration tracking with shared goals |
 | 🤖 **AI Summary** | Auto-generated weekly/monthly study reports and personalized recommendations |
 
+## 🚀 Enhancement Features (Week 5-6)
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| 🌓 **Dark/Light Theme** | 📋 Designed | Toggle between dark and light modes for different lighting environments |
+| 🔊 **Sound Effects** | 📋 Designed | Nature-themed audio feedback for key actions (start, pause, complete) |
+| 🎵 **Background Music** | 📋 Designed | Ambient music player with rain, ocean, forest, and stream sounds |
+| 🌍 **Multi-Language** | 📋 Designed | English and Simplified Chinese UI support with in-app switcher |
+| ⏱️ **Time Picker + Stopwatch** | 📋 Designed | iOS-style time selector (5-120 min) and count-up stopwatch mode |
+
 ---
 
 ## 🛠️ Tech Stack
@@ -124,7 +134,8 @@ cd CP3406-Mobile-Computing-for-Jcu
 ## 📚 Documentation
 
 For detailed technical development documentation, please see:
-- [Technical Development Document (TD)](./docs/TechnicalDevelopmentDocument.md)
+- [Technical Development Document (TD)](./docs/TechnicalDevelopmentDocument.md) - Complete technical specifications
+- [Feature Enhancement Plan](./docs/Feature_Enhancement_Plan.md) - Detailed design for Week 5-6 features
 - [Week 3-4 Progress Report](./docs/Week3-4_Progress_Report.md) - Latest development progress
 
 ---
