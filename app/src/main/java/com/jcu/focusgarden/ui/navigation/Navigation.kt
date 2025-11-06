@@ -22,12 +22,15 @@ sealed class Screen(val route: String) {
 /**
  * 主导航组件
  * 管理应用内所有屏幕的导航
+ * 
+ * @param onToggleTheme 主题切换回调函数
  */
 @Composable
 fun FocusGardenNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Screen.Dashboard.route
+    startDestination: String = Screen.Dashboard.route,
+    onToggleTheme: () -> Unit = {}
 ) {
     NavHost(
         navController = navController,
@@ -45,7 +48,8 @@ fun FocusGardenNavigation(
                 },
                 onAISummary = {
                     navController.navigate(Screen.AISummary.route)
-                }
+                },
+                onToggleTheme = onToggleTheme
             )
         }
         

@@ -15,9 +15,13 @@ import androidx.navigation.compose.rememberNavController
 /**
  * FocusGarden 主应用组件
  * 包含底部导航栏和导航控制
+ * 
+ * @param onToggleTheme 主题切换回调函数
  */
 @Composable
-fun FocusGardenApp() {
+fun FocusGardenApp(
+    onToggleTheme: () -> Unit = {}
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -93,7 +97,8 @@ fun FocusGardenApp() {
     ) { innerPadding ->
         FocusGardenNavigation(
             navController = navController,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            onToggleTheme = onToggleTheme
         )
     }
 }

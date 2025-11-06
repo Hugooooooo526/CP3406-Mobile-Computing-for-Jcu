@@ -20,6 +20,8 @@ import com.jcu.focusgarden.ui.theme.FocusGardenTheme
 /**
  * Dashboard 主屏幕
  * 显示用户的每日和每周进度、工作负载平衡以及快速操作
+ * 
+ * Week 5-6 Enhancement: 添加主题切换按钮
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,7 +29,8 @@ fun DashboardScreen(
     modifier: Modifier = Modifier,
     onStartFocus: () -> Unit = {},
     onViewJournal: () -> Unit = {},
-    onAISummary: () -> Unit = {}
+    onAISummary: () -> Unit = {},
+    onToggleTheme: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -38,6 +41,16 @@ fun DashboardScreen(
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
+                },
+                actions = {
+                    // 主题切换按钮
+                    IconButton(onClick = onToggleTheme) {
+                        Icon(
+                            imageVector = Icons.Default.Brightness6,
+                            contentDescription = "Toggle Theme",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
