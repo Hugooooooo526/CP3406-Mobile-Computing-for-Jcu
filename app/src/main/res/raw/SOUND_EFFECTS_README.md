@@ -5,56 +5,48 @@
 Please download the following sound effects and place them in this directory (`app/src/main/res/raw/`).
 
 ### 1. sound_focus_start.mp3 (~0.5s)
-**Description:** Gentle water drop sound  
+**Description:** Gentle water drop sound  ✅
 **Use:** Played when user starts a focus session  
-**Recommended sources:**
-- [Freesound: Water Drop](https://freesound.org/search/?q=water+drop&f=duration%3A%5B0+TO+1%5D)
-- [Zapsplat: Water Drops](https://www.zapsplat.com/sound-effect-category/water/)
+
 
 **Ideal characteristics:**
-- Duration: 0.3-0.5 seconds
+- Duration: 1 seconds
 - Format: MP3 or OGG
 - Size: < 100KB
 - Volume: Medium
 - Natural, calming sound
 
-### 2. sound_focus_pause.mp3 (~0.3s)
+### 2. sound_focus_pause.mp3 (~0.3s)✅
 **Description:** Soft bamboo tap or light wood click  
 **Use:** Played when user pauses a focus session  
-**Recommended sources:**
-- [Freesound: Bamboo](https://freesound.org/search/?q=bamboo+tap)
-- [Freesound: Wood Click](https://freesound.org/search/?q=wood+click&f=duration%3A%5B0+TO+1%5D)
+
 
 **Ideal characteristics:**
-- Duration: 0.2-0.4 seconds
+- Duration: 1 seconds
 - Format: MP3 or OGG
 - Size: < 50KB
 - Volume: Soft
 - Short, non-intrusive
 
-### 3. sound_focus_complete.mp3 (~1.5s)
+### 3. sound_focus_complete.mp3 (~1.5s)✅
 **Description:** Bird chirp with gentle wind chime  
 **Use:** Played when user completes a focus session  
-**Recommended sources:**
-- [Freesound: Bird Chirp](https://freesound.org/search/?q=bird+chirp&f=duration%3A%5B0+TO+2%5D)
-- [Freesound: Wind Chime](https://freesound.org/search/?q=wind+chime&f=duration%3A%5B0+TO+3%5D)
+
 
 **Ideal characteristics:**
-- Duration: 1-2 seconds
+- Duration: 3 seconds
 - Format: MP3 or OGG
 - Size: < 150KB
 - Volume: Medium-high (celebratory but not loud)
 - Encouraging, positive tone
 
-### 4. sound_focus_cancel.mp3 (~0.4s)
+### 4. sound_focus_cancel.mp3 (~0.4s)✅
 **Description:** Light leaf rustle or soft swoosh  
 **Use:** Played when user cancels a focus session  
-**Recommended sources:**
-- [Freesound: Leaf Rustle](https://freesound.org/search/?q=leaf+rustle&f=duration%3A%5B0+TO+1%5D)
-- [Freesound: Swoosh](https://freesound.org/search/?q=swoosh&f=duration%3A%5B0+TO+1%5D)
+
 
 **Ideal characteristics:**
-- Duration: 0.3-0.5 seconds
+- Duration: 1 seconds
 - Format: MP3 or OGG
 - Size: < 50KB
 - Volume: Soft
