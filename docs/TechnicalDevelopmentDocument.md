@@ -426,13 +426,166 @@ chore(ui): update color scheme
 
 ---
 
-## 11. 🧾 Future Improvements (Post-Project)
+## 11. 🚀 Enhancement Features (Week 5-6)
+
+### Overview
+
+To improve user experience and app professionalism, 5 core enhancement features have been planned and designed. These features range from simple UI improvements to advanced interaction capabilities.
+
+**📋 Feature Summary Table**
+
+| # | Feature | Difficulty | Priority | Status |
+|---|---------|-----------|----------|--------|
+| 1 | Dark/Light Theme Toggle | ⭐ | P1 | 📋 Designed |
+| 2 | Sound Effects System | ⭐⭐ | P1 | 📋 Designed |
+| 3 | Background Music Player | ⭐⭐⭐ | P2 | 📋 Designed |
+| 4 | Multi-Language Support | ⭐⭐⭐ | P2 | 📋 Designed |
+| 5 | Time Picker Wheel + Stopwatch | ⭐⭐⭐⭐ | P3 | 📋 Designed |
+
+### 11.1 Dark/Light Theme Toggle
+
+**Purpose:** Provide dark and light themes for different lighting environments.
+
+**Implementation:**
+- Theme toggle button in Dashboard TopAppBar (☀️/🌙 icon)
+- Dark color scheme: Deep green (#1B5E20) + Dark gray background (#121212)
+- User preference saved with DataStore
+- Seamless theme switching without app restart
+
+**UI Location:** Dashboard TopAppBar, top-right corner
+
+### 11.2 Sound Effects System
+
+**Purpose:** Provide immediate audio feedback for key user actions.
+
+**Sound Design:**
+- Nature-themed sounds (water drops, bamboo, bird chirps)
+- 4 sound effects: Start, Pause, Complete, Cancel
+- Source: freesound.org (CC0 licensed)
+- Total size: ~270 KB
+
+**Implementation:**
+- Use SoundPool API for short audio clips
+- Mute toggle in Dashboard TopAppBar
+- Non-blocking playback
+
+### 11.3 Background Music Player
+
+**Purpose:** Provide ambient music to enhance focus atmosphere.
+
+**Design Principle:** Simple, global, non-intrusive
+
+**Features:**
+- One-button control in Dashboard ("🎵 Focus Music")
+- 4 ambient tracks: Rain, Ocean, Forest, Stream
+- Random playback, loops continuously
+- Plays across all app screens
+- Uses MediaPlayer + Foreground Service
+
+**Music Library:**
+- Total size: ~8 MB (embedded in APK)
+- Format: MP3, 5 minutes each
+- Type: White noise / nature sounds
+
+### 11.4 Multi-Language Support
+
+**Supported Languages:**
+- 🇺🇸 English (default)
+- 🇨🇳 Simplified Chinese (简体中文)
+
+**Language Switcher:**
+- Location: Dashboard TopAppBar (🌐 icon)
+- UI: IconButton with DropdownMenu
+- Implementation: AppCompatDelegate + strings.xml
+
+**Translation Scope:**
+- All UI elements (buttons, titles, cards)
+- Navigation labels
+- AI Summary: Title/buttons translated, content in English only
+
+**Technical Approach:**
+- `values/strings.xml` → English
+- `values-zh/strings.xml` → Simplified Chinese
+- Dynamic locale switching without restart
+
+### 11.5 Time Picker Wheel + Stopwatch Mode
+
+**Purpose:** Provide flexible timer configuration for different study scenarios.
+
+#### Time Picker Wheel
+- iOS-style scrollable picker
+- Range: 5 - 120 minutes
+- Step: 5 minutes
+- UI: BottomSheet with LazyColumn
+- Quick presets: 15 / 25 / 45 / 60 min
+
+#### Stopwatch Mode
+- New timer mode: count up from 00:00
+- User manually finishes session
+- Controls: Start/Pause, Reset, Finish
+- Saves actual elapsed time to database
+
+**UI Design:**
+- SegmentedButton in TimerScreen: "⏱️ Timer" | "⏫ Stopwatch"
+- "⚙️ Custom" button opens time picker
+
+**Implementation:**
+- Extend TimerViewModel with `TimerMode` enum
+- Custom LazyColumn-based wheel picker
+- Reflection dialog triggers on manual finish
+
+### 11.6 Technical Requirements
+
+**New Dependencies:**
+```kotlin
+implementation("androidx.datastore:datastore-preferences:1.0.0")
+```
+
+**Permissions (AndroidManifest.xml):**
+```xml
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+```
+
+**APK Size Impact:**
+- Audio files: ~8.4 MB
+- Code: ~100 KB
+- Total: ~8.5 MB increase
+
+### 11.7 Implementation Timeline
+
+**Phase 1: Visual & Feedback (Week 5 first half)**
+- Day 1-2: Theme toggle + Sound effects
+
+**Phase 2: Multimedia & i18n (Week 5 second half)**
+- Day 3-4: Background music + Multi-language
+
+**Phase 3: Advanced Interaction (Week 6)**
+- Day 5-7: Time picker wheel + Stopwatch mode
+
+**Total Estimated Time:** 24-31 hours
+
+### 11.8 Testing Checklist
+
+- [ ] Theme switching works smoothly, preferences persist
+- [ ] Sound effects play correctly, mute toggle functional
+- [ ] Background music plays across screens, service lifecycle correct
+- [ ] Language switching instant, all strings translated
+- [ ] Time picker selects 5-120 min, stopwatch counts up correctly
+- [ ] All features work together without conflicts
+
+**Detailed Design Document:** See [Feature_Enhancement_Plan.md](./Feature_Enhancement_Plan.md)
+
+---
+
+## 12. 🧾 Future Improvements (Post-Project)
 
 - Cloud sync (Firebase) for Heist groups
 - Deeper AI analytics using OpenAI or Gemini APIs
 - Multi-device streak synchronization
-- Dark/light adaptive themes
 - Export focus data to calendar
+- More music types (Lo-fi, light music)
+- Custom sound effects upload
 
 ---
 
@@ -442,4 +595,5 @@ This Technical Development Document (TD):
 - Follows the confirmed Scenario 6 + Week 1–10 plan
 - Includes AI Summary simplification (auto summaries + next-step advice)
 - Defines realistic Compose architecture & development flow
+- **NEW:** Includes 5 enhancement features for Week 5-6 (see Section 11)
 - Ready for actual implementation and submission in CP3406 Part B–C
