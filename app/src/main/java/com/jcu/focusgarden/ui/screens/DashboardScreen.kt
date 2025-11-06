@@ -30,7 +30,11 @@ fun DashboardScreen(
     onStartFocus: () -> Unit = {},
     onViewJournal: () -> Unit = {},
     onAISummary: () -> Unit = {},
-    onToggleTheme: () -> Unit = {}
+    onToggleTheme: () -> Unit = {},
+    onToggleSound: () -> Unit = {},
+    isSoundMuted: Boolean = false,
+    onMusicToggle: () -> Unit = {},
+    isMusicPlaying: Boolean = false
 ) {
     Scaffold(
         topBar = {
@@ -80,7 +84,9 @@ fun DashboardScreen(
             QuickActionsCard(
                 onStartFocus = onStartFocus,
                 onViewJournal = onViewJournal,
-                onAISummary = onAISummary
+                onAISummary = onAISummary,
+                onMusicToggle = onMusicToggle,
+                isMusicPlaying = isMusicPlaying
             )
             
             Spacer(modifier = Modifier.height(8.dp))
@@ -186,7 +192,9 @@ private fun WorkloadBalanceCard() {
 private fun QuickActionsCard(
     onStartFocus: () -> Unit,
     onViewJournal: () -> Unit,
-    onAISummary: () -> Unit
+    onAISummary: () -> Unit,
+    onMusicToggle: () -> Unit = {},
+    isMusicPlaying: Boolean = false
 ) {
     FocusCard {
         Text(
@@ -196,9 +204,10 @@ private fun QuickActionsCard(
             color = MaterialTheme.colorScheme.onSurface
         )
         
+        // 第一行：Start Focus + View Journal
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             ElevatedButton(
                 onClick = onStartFocus,
@@ -206,7 +215,7 @@ private fun QuickActionsCard(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
+                modifier = Modifier.weight(1f)
             ) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
@@ -226,7 +235,7 @@ private fun QuickActionsCard(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
+                modifier = Modifier.weight(1f)
             ) {
                 Icon(
                     imageVector = Icons.Default.Create,
@@ -239,14 +248,22 @@ private fun QuickActionsCard(
                     style = MaterialTheme.typography.labelLarge
                 )
             }
-            
+        }
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        // 第二行：AI Summary + Focus Music
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             ElevatedButton(
                 onClick = onAISummary,
                 colors = ButtonDefaults.elevatedButtonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = "🤖",
@@ -255,6 +272,30 @@ private fun QuickActionsCard(
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = "AI",
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+            
+            // 背景音乐按钮
+            ElevatedButton(
+                onClick = onMusicToggle,
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = if (isMusicPlaying) 
+                        MaterialTheme.colorScheme.secondary 
+                    else 
+                        MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(
+                    imageVector = if (isMusicPlaying) Icons.Default.Stop else Icons.Default.MusicNote,
+                    contentDescription = if (isMusicPlaying) "Stop Music" else "Play Music",
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = if (isMusicPlaying) "Stop" else "Music",
                     style = MaterialTheme.typography.labelLarge
                 )
             }

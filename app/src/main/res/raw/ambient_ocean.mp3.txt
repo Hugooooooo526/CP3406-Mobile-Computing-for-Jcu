@@ -1,0 +1,9 @@
+Placeholder for ambient_ocean.mp3
+
+Please download ocean waves sound (5-10 minutes) and rename it to:
+ambient_ocean.mp3
+
+Then replace this file.
+
+See BACKGROUND_MUSIC_README.md for detailed instructions.
+
