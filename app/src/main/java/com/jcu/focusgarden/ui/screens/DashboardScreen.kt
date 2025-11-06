@@ -21,7 +21,9 @@ import com.jcu.focusgarden.ui.theme.FocusGardenTheme
  * Dashboard 主屏幕
  * 显示用户的每日和每周进度、工作负载平衡以及快速操作
  * 
- * Week 5-6 Enhancement: 添加主题切换按钮
+ * Week 5-6 Enhancement:
+ * - 添加主题切换按钮
+ * - 添加音效开关按钮
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,7 +32,9 @@ fun DashboardScreen(
     onStartFocus: () -> Unit = {},
     onViewJournal: () -> Unit = {},
     onAISummary: () -> Unit = {},
-    onToggleTheme: () -> Unit = {}
+    onToggleTheme: () -> Unit = {},
+    onToggleSound: () -> Unit = {},
+    isSoundMuted: Boolean = false
 ) {
     Scaffold(
         topBar = {
@@ -43,6 +47,15 @@ fun DashboardScreen(
                     )
                 },
                 actions = {
+                    // 音效开关按钮
+                    IconButton(onClick = onToggleSound) {
+                        Icon(
+                            imageVector = if (isSoundMuted) Icons.Default.VolumeOff else Icons.Default.VolumeUp,
+                            contentDescription = if (isSoundMuted) "Unmute Sound" else "Mute Sound",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                    
                     // 主题切换按钮
                     IconButton(onClick = onToggleTheme) {
                         Icon(

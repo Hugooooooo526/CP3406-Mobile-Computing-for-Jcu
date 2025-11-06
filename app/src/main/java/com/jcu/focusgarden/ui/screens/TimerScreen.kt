@@ -21,17 +21,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jcu.focusgarden.R
 import com.jcu.focusgarden.ui.theme.FocusGardenTheme
+import com.jcu.focusgarden.utils.SoundManager
 
 /**
  * Timer Screen - Focus Session
  * 按照 TD 文档 4.3.2 规范实现
  * 提供 Pomodoro 风格的专注计时器
+ * 
+ * Week 5-6 Enhancement: 集成音效反馈
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimerScreen(
     modifier: Modifier = Modifier,
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    soundManager: SoundManager? = null
 ) {
     // 静态 UI 状态（Week 3-4）
     var isPlaying by remember { mutableStateOf(false) }
@@ -91,8 +95,17 @@ fun TimerScreen(
                     FloatingActionButton(
                         onClick = { 
                             isPlaying = !isPlaying
+                            
+                            // 播放音效
+                            if (isPlaying) {
+                                soundManager?.playStart() // 开始音效
+                            } else {
+                                soundManager?.playPause() // 暂停音效
+                            }
+                            
                             // 模拟完成后显示反思对话框
                             if (remainingSeconds <= 0) {
+                                soundManager?.playComplete() // 完成音效
                                 showReflectionDialog = true
                             }
                         },
@@ -112,6 +125,7 @@ fun TimerScreen(
                         onClick = { 
                             remainingSeconds = 25 * 60
                             isPlaying = false
+                            soundManager?.playCancel() // 取消/重置音效
                         }
                     ) {
                         Text(
