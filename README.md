@@ -110,12 +110,14 @@ cd CP3406-Mobile-Computing-for-Jcu
 
 | Week | Phase | Status |
 |------|-------|--------|
-| Week 1-2 | Project Setup & UI Theme | ✅ In Progress |
-| Week 3-4 | UI Wireframes & Static Layouts | ⏳ Planned |
-| Week 5-6 | MVP Development (Timer + Journal) | ⏳ Planned |
+| Week 1-2 | Project Setup & UI Theme | ✅ Completed |
+| Week 3-4 | UI Wireframes & Static Layouts | ✅ Completed |
+| Week 5-6 | MVP Development (Timer + Journal) | ⏳ Next Phase |
 | Week 7-8 | Dashboard & Heist Features | ⏳ Planned |
 | Week 9 | AI Summary Module | ⏳ Planned |
 | Week 10 | Testing & Release | ⏳ Planned |
+
+**Latest Update (2025-11-03):** Week 3-4 完成！所有 UI 界面、导航系统、Room 数据库架构已实现。详见 [Week 3-4 Progress Report](./docs/Week3-4_Progress_Report.md)
 
 ---
 
@@ -123,6 +125,7 @@ cd CP3406-Mobile-Computing-for-Jcu
 
 For detailed technical development documentation, please see:
 - [Technical Development Document (TD)](./docs/TechnicalDevelopmentDocument.md)
+- [Week 3-4 Progress Report](./docs/Week3-4_Progress_Report.md) - Latest development progress
 
 ---
 
