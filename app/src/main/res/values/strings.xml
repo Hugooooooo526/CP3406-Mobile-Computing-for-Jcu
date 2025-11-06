@@ -22,10 +22,37 @@
     <string name="timer_title">Focus Timer</string>
     <string name="ambient_sound">Ambient Sound 🌿</string>
     <string name="reset">Reset</string>
+    <string name="start">Start</string>
+    <string name="pause">Pause</string>
+    <string name="reflect_title">Reflect on Your Session 🌱</string>
+    <string name="how_feel">How do you feel?</string>
+    <string name="what_learned">What did you learn or improve?</string>
+    <string name="optional_notes">Optional notes...</string>
+    
+    <!-- Heist Group -->
+    <string name="heist_title">Heist Group</string>
+    <string name="group_goal">Complete 8 Pomodoros Today</string>
+    <string name="group_streak">%d-Day Group Streak</string>
+    <string name="invite_member">Invite Member</string>
+    <string name="start_with_team">Start Focus with Team</string>
+    <string name="team_motivation">Small wins together make big growth 🌱</string>
+    
+    <!-- AI Summary -->
+    <string name="ai_summary_title">AI Summary</string>
+    <string name="weekly_summary">Weekly Summary</string>
+    <string name="total_focus_time">Total Focus Time</string>
+    <string name="average_per_day">Average per Day</string>
+    <string name="longest_streak">Longest Streak</string>
+    <string name="peak_day">Peak Day</string>
+    <string name="productivity_trend">Productivity Trend</string>
+    <string name="mood_trend">Mood Trend</string>
+    <string name="next_week_recommendations">Next Week Recommendations</string>
+    <string name="generate_monthly_report">Generate Monthly Report (PDF)</string>
     
     <!-- Common -->
     <string name="save">Save</string>
     <string name="skip">Skip</string>
     <string name="cancel">Cancel</string>
+    <string name="back">Back</string>
 </resources>
 

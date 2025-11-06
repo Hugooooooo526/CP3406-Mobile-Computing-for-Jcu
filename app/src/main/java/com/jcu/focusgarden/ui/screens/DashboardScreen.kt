@@ -127,7 +127,7 @@ private fun TodayFocusCard() {
         
         // 简单的进度指示器
         LinearProgressIndicator(
-            progress = { 0.75f },
+            progress = 0.75f,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(8.dp),
