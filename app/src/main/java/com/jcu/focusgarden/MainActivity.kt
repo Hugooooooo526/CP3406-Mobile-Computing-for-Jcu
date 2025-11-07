@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import com.jcu.focusgarden.data.preferences.LanguagePreferences
 import com.jcu.focusgarden.data.preferences.SoundPreferences
 import com.jcu.focusgarden.data.preferences.ThemePreferences
 import com.jcu.focusgarden.ui.navigation.FocusGardenApp
@@ -24,12 +25,14 @@ import kotlinx.coroutines.launch
  * Week 5-6 Enhancement:
  * - 添加深色/浅色主题切换功能
  * - 添加音效反馈系统
+ * - 添加多语言支持
  * - 使用 DataStore 持久化偏好设置
  */
 class MainActivity : ComponentActivity() {
     
     private lateinit var themePreferences: ThemePreferences
     private lateinit var soundPreferences: SoundPreferences
+    private lateinit var languagePreferences: LanguagePreferences
     private lateinit var soundManager: SoundManager
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,10 +41,11 @@ class MainActivity : ComponentActivity() {
         // 初始化偏好管理器
         themePreferences = ThemePreferences(this)
         soundPreferences = SoundPreferences(this)
+        languagePreferences = LanguagePreferences(this)
         soundManager = SoundManager(this)
         
         setContent {
-            // 观察主题和音效状态
+            // 观察主题、音效和语言状态
             val isDarkTheme by themePreferences.isDarkTheme.collectAsState(initial = false)
             val isSoundMuted by soundPreferences.isSoundMuted.collectAsState(initial = false)
             val coroutineScope = rememberCoroutineScope()
@@ -65,6 +69,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
             
+            // 语言切换函数
+            val onSelectLanguage: (String) -> Unit = { languageCode ->
+                coroutineScope.launch {
+                    languagePreferences.setLanguage(languageCode)
+                }
+            }
+            
             FocusGardenTheme(darkTheme = isDarkTheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -74,7 +85,8 @@ class MainActivity : ComponentActivity() {
                         onToggleTheme = onToggleTheme,
                         onToggleSound = onToggleSound,
                         soundManager = soundManager,
-                        isSoundMuted = isSoundMuted
+                        isSoundMuted = isSoundMuted,
+                        onSelectLanguage = onSelectLanguage
                     )
                 }
             }

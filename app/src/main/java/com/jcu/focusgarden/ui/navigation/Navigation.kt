@@ -28,6 +28,7 @@ sealed class Screen(val route: String) {
  * @param onToggleSound 音效切换回调函数
  * @param soundManager 音效管理器
  * @param isSoundMuted 当前音效状态
+ * @param onSelectLanguage 语言切换回调函数
  */
 @Composable
 fun FocusGardenNavigation(
@@ -37,7 +38,8 @@ fun FocusGardenNavigation(
     onToggleTheme: () -> Unit = {},
     onToggleSound: () -> Unit = {},
     soundManager: SoundManager? = null,
-    isSoundMuted: Boolean = false
+    isSoundMuted: Boolean = false,
+    onSelectLanguage: (String) -> Unit = {}
 ) {
     NavHost(
         navController = navController,
@@ -58,7 +60,8 @@ fun FocusGardenNavigation(
                 },
                 onToggleTheme = onToggleTheme,
                 onToggleSound = onToggleSound,
-                isSoundMuted = isSoundMuted
+                isSoundMuted = isSoundMuted,
+                onSelectLanguage = onSelectLanguage
             )
         }
         

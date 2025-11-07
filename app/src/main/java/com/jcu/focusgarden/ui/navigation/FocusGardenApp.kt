@@ -7,10 +7,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.jcu.focusgarden.R
 import com.jcu.focusgarden.utils.SoundManager
 
 /**
@@ -21,13 +23,15 @@ import com.jcu.focusgarden.utils.SoundManager
  * @param onToggleSound 音效切换回调函数
  * @param soundManager 音效管理器
  * @param isSoundMuted 当前音效状态
+ * @param onSelectLanguage 语言切换回调函数
  */
 @Composable
 fun FocusGardenApp(
     onToggleTheme: () -> Unit = {},
     onToggleSound: () -> Unit = {},
     soundManager: SoundManager? = null,
-    isSoundMuted: Boolean = false
+    isSoundMuted: Boolean = false,
+    onSelectLanguage: (String) -> Unit = {}
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -36,22 +40,22 @@ fun FocusGardenApp(
     // 定义底部导航项
     val bottomNavItems = listOf(
         BottomNavItem(
-            title = "Dashboard",
+            title = stringResource(R.string.nav_dashboard),
             icon = Icons.Default.Home,
             route = Screen.Dashboard.route
         ),
         BottomNavItem(
-            title = "Timer",
+            title = stringResource(R.string.nav_timer),
             icon = Icons.Default.Timer,
             route = Screen.Timer.route
         ),
         BottomNavItem(
-            title = "Heist",
+            title = stringResource(R.string.nav_heist),
             icon = Icons.Default.Group,
             route = Screen.Heist.route
         ),
         BottomNavItem(
-            title = "AI",
+            title = stringResource(R.string.nav_summary),
             icon = Icons.Default.AutoAwesome,
             route = Screen.AISummary.route
         )
@@ -108,7 +112,8 @@ fun FocusGardenApp(
             onToggleTheme = onToggleTheme,
             onToggleSound = onToggleSound,
             soundManager = soundManager,
-            isSoundMuted = isSoundMuted
+            isSoundMuted = isSoundMuted,
+            onSelectLanguage = onSelectLanguage
         )
     }
 }

@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,6 +24,7 @@ import com.jcu.focusgarden.ui.theme.FocusGardenTheme
  * Week 5-6 Enhancement:
  * - 添加主题切换按钮
  * - 添加音效开关按钮
+ * - 添加语言切换器
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,8 +35,11 @@ fun DashboardScreen(
     onAISummary: () -> Unit = {},
     onToggleTheme: () -> Unit = {},
     onToggleSound: () -> Unit = {},
-    isSoundMuted: Boolean = false
+    isSoundMuted: Boolean = false,
+    onSelectLanguage: (String) -> Unit = {}
 ) {
+    // 语言菜单展开状态
+    var languageMenuExpanded by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -47,11 +51,43 @@ fun DashboardScreen(
                     )
                 },
                 actions = {
+                    // 语言切换按钮
+                    IconButton(onClick = { languageMenuExpanded = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Language,
+                            contentDescription = stringResource(R.string.select_language),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                    
+                    // 语言下拉菜单
+                    DropdownMenu(
+                        expanded = languageMenuExpanded,
+                        onDismissRequest = { languageMenuExpanded = false }
+                    ) {
+                        // English
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.language_english)) },
+                            onClick = {
+                                onSelectLanguage("en")
+                                languageMenuExpanded = false
+                            }
+                        )
+                        // 简体中文
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.language_chinese)) },
+                            onClick = {
+                                onSelectLanguage("zh")
+                                languageMenuExpanded = false
+                            }
+                        )
+                    }
+                    
                     // 音效开关按钮
                     IconButton(onClick = onToggleSound) {
                         Icon(
                             imageVector = if (isSoundMuted) Icons.Default.VolumeOff else Icons.Default.VolumeUp,
-                            contentDescription = if (isSoundMuted) "Unmute Sound" else "Mute Sound",
+                            contentDescription = if (isSoundMuted) stringResource(R.string.unmute_sound) else stringResource(R.string.mute_sound),
                             tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
@@ -60,7 +96,7 @@ fun DashboardScreen(
                     IconButton(onClick = onToggleTheme) {
                         Icon(
                             imageVector = Icons.Default.Brightness6,
-                            contentDescription = "Toggle Theme",
+                            contentDescription = stringResource(R.string.toggle_theme),
                             tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
@@ -128,7 +164,7 @@ private fun TodayFocusCard() {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Focused 75 min",
+                    text = "0${stringResource(R.string.hour_short)} 45${stringResource(R.string.minute_short)}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -228,7 +264,7 @@ private fun QuickActionsCard(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "Start",
+                    text = stringResource(R.string.start_focus),
                     style = MaterialTheme.typography.labelLarge
                 )
             }
@@ -248,7 +284,7 @@ private fun QuickActionsCard(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "Journal",
+                    text = stringResource(R.string.view_journal),
                     style = MaterialTheme.typography.labelLarge
                 )
             }
@@ -267,7 +303,7 @@ private fun QuickActionsCard(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "AI",
+                    text = stringResource(R.string.ai_summary_button),
                     style = MaterialTheme.typography.labelLarge
                 )
             }

@@ -1,58 +1,170 @@
 <resources>
+    <!-- ==================== App Name ==================== -->
     <string name="app_name">FocusGarden</string>
     
-    <!-- Navigation -->
+    <!-- ==================== Navigation Bar ==================== -->
     <string name="nav_dashboard">Dashboard</string>
     <string name="nav_timer">Focus Timer</string>
     <string name="nav_heist">Heist Group</string>
     <string name="nav_summary">AI Summary</string>
     
-    <!-- Dashboard -->
+    <!-- ==================== Dashboard Screen ==================== -->
     <string name="dashboard_title">FocusGarden 🌱</string>
+    
+    <!-- Today's Focus Card -->
     <string name="today_focus">Today\'s Focus</string>
+    <string name="hour_short">h</string>
+    <string name="minute_short">m</string>
+    <string name="session_count">%d Sessions</string>
+    
+    <!-- Weekly Progress Card -->
     <string name="this_week">This Week</string>
+    <string name="weekly_goal_progress">Goal: 10 hours</string>
+    <string name="day_sun">Sun</string>
+    <string name="day_mon">Mon</string>
+    <string name="day_tue">Tue</string>
+    <string name="day_wed">Wed</string>
+    <string name="day_thu">Thu</string>
+    <string name="day_fri">Fri</string>
+    <string name="day_sat">Sat</string>
+    
+    <!-- Workload Balance Card -->
     <string name="workload_balance">Workload Balance</string>
+    <string name="academic_label">Academic</string>
+    <string name="personal_label">Personal</string>
+    <string name="work_label">Work</string>
+    
+    <!-- Quick Actions Card -->
     <string name="quick_actions">Quick Actions</string>
     <string name="start_focus">Start Focus</string>
     <string name="view_journal">View Journal</string>
-    <string name="ai_summary">AI Summary</string>
+    <string name="ai_summary_button">AI Summary</string>
+    
+    <!-- Motivation -->
     <string name="motivation_text">Consistency grows your garden 🌿</string>
     
-    <!-- Timer -->
+    <!-- ==================== Timer Screen ==================== -->
     <string name="timer_title">Focus Timer</string>
+    <string name="timer_mode">Focus Mode</string>
     <string name="ambient_sound">Ambient Sound 🌿</string>
+    <string name="rain_sound">Rain</string>
+    <string name="ocean_sound">Ocean</string>
+    <string name="forest_sound">Forest</string>
+    <string name="stream_sound">Stream</string>
+    <string name="none_sound">None</string>
+    
+    <!-- Timer Controls -->
     <string name="reset">Reset</string>
     <string name="start">Start</string>
     <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="finish">Finish</string>
+    
+    <!-- Reflection Dialog -->
     <string name="reflect_title">Reflect on Your Session 🌱</string>
     <string name="how_feel">How do you feel?</string>
     <string name="what_learned">What did you learn or improve?</string>
     <string name="optional_notes">Optional notes...</string>
+    <string name="learning_notes_placeholder">Share your learning experience...</string>
     
-    <!-- Heist Group -->
+    <!-- Emotion Chips -->
+    <string name="emotion_productive">😊 Productive</string>
+    <string name="emotion_focused">😌 Focused</string>
+    <string name="emotion_distracted">😕 Distracted</string>
+    <string name="emotion_frustrated">😤 Frustrated</string>
+    <string name="emotion_tired">😴 Tired</string>
+    
+    <!-- ==================== Heist Group Screen ==================== -->
     <string name="heist_title">Heist Group</string>
     <string name="group_goal">Complete 8 Pomodoros Today</string>
+    <string name="group_progress">Group Progress</string>
     <string name="group_streak">%d-Day Group Streak</string>
+    <string name="group_members">Group Members</string>
     <string name="invite_member">Invite Member</string>
     <string name="start_with_team">Start Focus with Team</string>
     <string name="team_motivation">Small wins together make big growth 🌱</string>
     
-    <!-- AI Summary -->
+    <!-- Member Status -->
+    <string name="member_status_active">Active</string>
+    <string name="member_status_focusing">Focusing</string>
+    <string name="member_status_offline">Offline</string>
+    
+    <!-- ==================== AI Summary Screen ==================== -->
     <string name="ai_summary_title">AI Summary</string>
     <string name="weekly_summary">Weekly Summary</string>
+    <string name="monthly_summary">Monthly Summary</string>
+    
+    <!-- Statistics -->
     <string name="total_focus_time">Total Focus Time</string>
     <string name="average_per_day">Average per Day</string>
     <string name="longest_streak">Longest Streak</string>
     <string name="peak_day">Peak Day</string>
+    <string name="total_sessions">Total Sessions</string>
+    <string name="completion_rate">Completion Rate</string>
+    
+    <!-- Trends -->
     <string name="productivity_trend">Productivity Trend</string>
     <string name="mood_trend">Mood Trend</string>
+    <string name="category_breakdown">Category Breakdown</string>
+    
+    <!-- Recommendations -->
     <string name="next_week_recommendations">Next Week Recommendations</string>
+    <string name="ai_insights">AI Insights</string>
     <string name="generate_monthly_report">Generate Monthly Report (PDF)</string>
     
-    <!-- Common -->
+    <!-- AI Content (Keep in English) -->
+    <string name="ai_recommendation_1">Schedule your toughest tasks during peak hours (10am-12pm)</string>
+    <string name="ai_recommendation_2">Take 10-min breaks between sessions for better retention</string>
+    <string name="ai_recommendation_3">Your group performs best on Tue &amp; Thu - schedule collaborative work then</string>
+    
+    <!-- ==================== Common Buttons ==================== -->
     <string name="save">Save</string>
     <string name="skip">Skip</string>
     <string name="cancel">Cancel</string>
     <string name="back">Back</string>
+    <string name="confirm">Confirm</string>
+    <string name="done">Done</string>
+    <string name="ok">OK</string>
+    <string name="close">Close</string>
+    
+    <!-- ==================== Settings & Controls ==================== -->
+    <!-- Theme Toggle -->
+    <string name="toggle_theme">Toggle Theme</string>
+    <string name="light_mode">Light Mode</string>
+    <string name="dark_mode">Dark Mode</string>
+    
+    <!-- Sound Toggle -->
+    <string name="toggle_sound">Toggle Sound</string>
+    <string name="sound_on">Sound On</string>
+    <string name="sound_off">Sound Off</string>
+    <string name="mute_sound">Mute Sound</string>
+    <string name="unmute_sound">Unmute Sound</string>
+    
+    <!-- Language Selector -->
+    <string name="select_language">Select Language</string>
+    <string name="language_english">English</string>
+    <string name="language_chinese">简体中文</string>
+    
+    <!-- ==================== Time Units ==================== -->
+    <string name="minutes">minutes</string>
+    <string name="hours">hours</string>
+    <string name="days">days</string>
+    <string name="seconds">seconds</string>
+    
+    <!-- ==================== Error Messages ==================== -->
+    <string name="error_generic">Something went wrong</string>
+    <string name="error_network">Network connection error</string>
+    <string name="error_save_failed">Failed to save data</string>
+    <string name="error_load_failed">Failed to load data</string>
+    
+    <!-- ==================== Empty States ==================== -->
+    <string name="empty_journal">No journal entries yet</string>
+    <string name="empty_sessions">No focus sessions yet</string>
+    <string name="empty_group_members">No members yet</string>
+    
+    <!-- ==================== Notifications ==================== -->
+    <string name="notification_timer_complete">Focus session completed!</string>
+    <string name="notification_break_time">Time for a break</string>
+    <string name="notification_group_update">Your group has made progress</string>
 </resources>
 
