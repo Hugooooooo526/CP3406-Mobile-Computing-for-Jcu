@@ -35,18 +35,19 @@ class MusicPlayerService : Service() {
     private var currentMusicIndex = -1
     
     // 音乐资源列表
+    // 注意：Android 会自动将文件名中的连字符(-) 转换为下划线(_)
     private val musicList = listOf(
-        R.raw.ambient_rain,
-        R.raw.ambient_ocean,
-        R.raw.ambient_forest,
-        R.raw.ambient_stream
+        R.raw.copyright_free_rain_sounds_331497,    // 7 minutes
+        R.raw.ocean_waves_sound_01_321570,          // 1:14 minutes
+        R.raw.river_in_the_forest_17271,            // 3:20 minutes
+        R.raw.water_small_stream_25614              // 37 seconds
     )
     
     // 音乐名称（用于通知显示）
     private val musicNames = listOf(
         "Rain Sounds 🌧️",
         "Ocean Waves 🌊",
-        "Forest Birds 🌲",
+        "River in Forest 🌲",
         "Stream Water 💧"
     )
     

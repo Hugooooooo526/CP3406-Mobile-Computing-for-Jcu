@@ -16,7 +16,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import androidx.compose.runtime.mutableStateOf
-import com.jcu.focusgarden.data.preferences.SoundPreferences
 import com.jcu.focusgarden.data.preferences.ThemePreferences
 import com.jcu.focusgarden.service.MusicPlayerService
 import com.jcu.focusgarden.ui.navigation.FocusGardenApp
@@ -29,7 +28,6 @@ import kotlinx.coroutines.launch
  * 
  * Week 5-6 Enhancement:
  * - 添加深色/浅色主题切换功能
- * - 添加音效反馈系统
  * - 添加背景音乐播放功能
  * - 使用 DataStore 持久化偏好设置
  */
@@ -76,13 +74,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
             
-            // 音效切换函数
-            val onToggleSound: () -> Unit = {
-                coroutineScope.launch {
-                    soundPreferences.toggleSound()
-                }
-            }
-            
             // 背景音乐切换函数
             val onMusicToggle: () -> Unit = {
                 if (isMusicPlaying.value) {
@@ -101,9 +92,6 @@ class MainActivity : ComponentActivity() {
                 ) {
                     FocusGardenApp(
                         onToggleTheme = onToggleTheme,
-                        onToggleSound = onToggleSound,
-                        soundManager = soundManager,
-                        isSoundMuted = isSoundMuted,
                         onMusicToggle = onMusicToggle,
                         isMusicPlaying = isMusicPlaying.value
                     )
@@ -154,9 +142,6 @@ class MainActivity : ComponentActivity() {
     
     override fun onDestroy() {
         super.onDestroy()
-        
-        // 释放音效资源
-        soundManager.release()
         
         // 解绑音乐服务
         if (isMusicBound) {

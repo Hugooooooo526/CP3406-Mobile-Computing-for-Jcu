@@ -31,8 +31,6 @@ fun DashboardScreen(
     onViewJournal: () -> Unit = {},
     onAISummary: () -> Unit = {},
     onToggleTheme: () -> Unit = {},
-    onToggleSound: () -> Unit = {},
-    isSoundMuted: Boolean = false,
     onMusicToggle: () -> Unit = {},
     isMusicPlaying: Boolean = false
 ) {
