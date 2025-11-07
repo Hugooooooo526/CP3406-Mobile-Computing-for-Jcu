@@ -1,9 +1,0 @@
-Placeholder for ambient_forest.mp3
-
-Please download forest ambience sound (5-10 minutes) and rename it to:
-ambient_forest.mp3
-
-Then replace this file.
-
-See BACKGROUND_MUSIC_README.md for detailed instructions.
-

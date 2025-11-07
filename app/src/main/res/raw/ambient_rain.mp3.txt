@@ -1,9 +1,0 @@
-Placeholder for ambient_rain.mp3
-
-Please download a rain ambience sound (5-10 minutes) and rename it to:
-ambient_rain.mp3
-
-Then replace this file.
-
-See BACKGROUND_MUSIC_README.md for detailed instructions.
-
