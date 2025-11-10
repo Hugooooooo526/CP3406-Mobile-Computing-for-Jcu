@@ -12,6 +12,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.jcu.focusgarden.utils.SoundManager
+import com.jcu.focusgarden.viewmodel.TimerViewModel
+import com.jcu.focusgarden.viewmodel.DashboardViewModel
 
 /**
  * FocusGarden 主应用组件
@@ -23,6 +25,8 @@ import com.jcu.focusgarden.utils.SoundManager
  * @param onToggleSound 音效切换回调函数
  * @param soundManager 音效管理器
  * @param isSoundMuted 当前音效状态
+ * @param timerViewModel Timer 功能的 ViewModel (Week 5-6 MVP)
+ * @param dashboardViewModel Dashboard 功能的 ViewModel (Week 5-6 Phase E)
  */
 @Composable
 fun FocusGardenApp(
@@ -33,7 +37,9 @@ fun FocusGardenApp(
   
     onToggleSound: () -> Unit = {},
     soundManager: SoundManager? = null,
-    isSoundMuted: Boolean = false
+    isSoundMuted: Boolean = false,
+    timerViewModel: TimerViewModel? = null,
+    dashboardViewModel: DashboardViewModel? = null
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -117,7 +123,9 @@ fun FocusGardenApp(
 
             onToggleSound = onToggleSound,
             soundManager = soundManager,
-            isSoundMuted = isSoundMuted
+            isSoundMuted = isSoundMuted,
+            timerViewModel = timerViewModel,
+            dashboardViewModel = dashboardViewModel
         )
     }
 }

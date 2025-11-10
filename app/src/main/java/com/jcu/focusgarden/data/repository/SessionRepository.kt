@@ -63,6 +63,27 @@ class SessionRepository(
     suspend fun getTodayTotalDuration(date: String): Int {
         return sessionDao.getTodayTotalDuration(date) ?: 0
     }
+    
+    /**
+     * 获取本周每天的专注时长
+     */
+    suspend fun getWeeklyDurations(startDate: String, endDate: String): List<com.jcu.focusgarden.data.local.dao.DailyDuration> {
+        return sessionDao.getWeeklyDurations(startDate, endDate)
+    }
+    
+    /**
+     * 获取所有不重复的日期（用于计算 Streak）
+     */
+    suspend fun getAllDistinctDates(): List<String> {
+        return sessionDao.getAllDistinctDates()
+    }
+    
+    /**
+     * 获取按类别统计的总时长
+     */
+    suspend fun getCategoryDurations(): List<com.jcu.focusgarden.data.local.dao.CategoryDuration> {
+        return sessionDao.getCategoryDurations()
+    }
 }
 
 
