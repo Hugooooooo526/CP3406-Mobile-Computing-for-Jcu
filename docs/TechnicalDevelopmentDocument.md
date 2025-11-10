@@ -366,8 +366,8 @@ Next Step:
 | Week 1–2 | Setup & Research | - Android Studio setup<br>- GitHub repo init<br>- Jetpack Compose tutorials<br>- Confirm UI theme/colors | Project skeleton + theme prototype | ✅ Completed |
 | Week 3–4 | UI Wireframes & Architecture | - Build static UI layouts<br>- Dashboard, Timer, Heist, AI mockups<br>- Room database setup<br>- MVVM structure | Compose layouts + Database schema | ✅ Completed |
 | Week 5–6 | **MVP Development** | **详见 Section 7.1** | **Fully working Timer & Journal** | ✅ **Completed (2025-11-10)** |
-| Week 7–8 | Feature Integration | - Dashboard data visualization<br>- Heist group mock data<br>- Local storage aggregation | Working Dashboard + Group view | ⏳ Next Phase |
-| Week 9 | AI Summary Module | - Local summary generation logic<br>- Report screen UI<br>- Recommendation engine | Working AI Summary feature | ⏳ Planned |
+| Week 7–8 | Feature Integration | **详见 Section 7.2**<br>- ✅ Dashboard data visualization<br>- ✅ Heist group mock data | Working Dashboard + Heist Group | ✅ **Completed (2025-11-10)** |
+| Week 9 | AI Summary Module | - Local summary generation logic<br>- Report screen UI<br>- Recommendation engine | Working AI Summary feature | ⏳ Next Phase |
 | Week 10 | Testing & Polish | - Unit tests + UI polish<br>- Bug fixes, refactor<br>- Prepare presentation & APK | Stable build + recorded demo | ⏳ Planned |
 
 ---
@@ -594,7 +594,74 @@ fun setFocusDuration(minutes: Int) {
 
 **文件:** `TimerViewModel.kt`, `TimerScreen.kt`
 
-#### 总预计时间: 11-16 小时
+---
+
+### 7.2 Week 7-8 Feature Integration (Heist Group)
+
+**目标:** 实现 Heist Group 小组协作功能（简化版）
+
+**开发日期:** 2025-11-10  
+**状态:** ✅ 已完成
+
+#### 技术决策
+
+1. **实现方式:** 简化版（模拟数据）
+   - ✅ 使用静态模拟数据展示小组功能
+   - ❌ 不连接数据库（保持简单）
+   - **理由:** 快速展示功能概念，为后续扩展预留空间
+
+2. **功能范围:**
+   - ✅ 小组目标和 Streak 展示
+   - ✅ 成员进度列表（4名成员）
+   - ✅ 小组总体进度条
+   - ❌ 实时数据同步（未实现）
+
+#### 实现内容
+
+**任务清单:**
+- [x] 优化 HeistScreen UI 展示
+- [x] 增强小组目标卡片（添加进度条）
+- [x] 更新成员进度显示（今日分钟数 + 本周进度）
+- [x] 调整 MemberProgress 数据结构
+- [x] 美化 UI 细节和间距
+
+**模拟数据结构:**
+```kotlin
+// 小组信息
+val groupName = "Study Squad"
+val groupGoal = "Complete 30 Pomodoros This Week"
+val groupStreak = 5 // 连续 5 天
+val totalCompleted = 18 // 已完成 18 个
+val totalTarget = 30 // 目标 30 个
+
+// 成员信息（4人）
+val members = listOf(
+    MemberProgress("Alex Chen", 75, 5, 8, "AC"),    // 今日75分钟，本周5/8完成
+    MemberProgress("Sara Kim", 50, 4, 8, "SK"),     // 今日50分钟，本周4/8完成
+    MemberProgress("John Davis", 100, 6, 8, "JD"),  // 今日100分钟，本周6/8完成
+    MemberProgress("Emma Wilson", 45, 3, 8, "EW")   // 今日45分钟，本周3/8完成
+)
+```
+
+**UI 增强:**
+1. **小组目标卡片:**
+   - 🎯 小组名称（emoji + 标题）
+   - 📝 目标描述
+   - 📊 团队进度条（18/30）
+   - 🔥 小组 Streak 显示
+   - ➕ 邀请成员按钮
+
+2. **成员进度项:**
+   - 👤 头像（缩写圆形）
+   - 📊 姓名 + 今日分钟数
+   - 📈 本周进度条（x/8）
+   - 👍 点赞按钮
+
+**文件:** `HeistScreen.kt` (449 行)
+
+**开发时间:** 约 30 分钟
+
+#### 总预计时间: 11-16 小时 (Week 5-6) + 0.5 小时 (Week 7-8)
 
 #### 端到端测试流程
 
@@ -638,6 +705,43 @@ feature/ai_summary
 feat(timer): implement basic countdown
 fix(db): corrected Room entity mapping
 chore(ui): update color scheme
+```
+
+### Code Standards
+
+**Language Policy (Enforced: 2025-11-10):**
+- ✅ **All code comments must be in English**
+- ✅ **All UI text and mock data must be in English**
+- ✅ **Variable names, function names, class names must be in English**
+- ✅ **Documentation can be bilingual (English + Chinese) for TD only**
+- ❌ **No Chinese in source code (.kt, .java, .xml files)**
+
+**Rationale:**
+- International collaboration readiness
+- Better code review and maintenance
+- Professional development standards
+- Easier for non-Chinese speakers to contribute
+
+**Examples:**
+
+✅ **Good (English):**
+```kotlin
+// Timer countdown core logic
+fun startCountdown() {
+    // Start the timer
+}
+
+val groupName = "Study Squad"  // Mock group data
+```
+
+❌ **Bad (Chinese):**
+```kotlin
+// 计时器倒计时核心逻辑
+fun startCountdown() {
+    // 开始计时
+}
+
+val groupName = "学习小组"  // 模拟小组数据
 ```
 
 ---
@@ -910,21 +1014,23 @@ implementation("androidx.datastore:datastore-preferences:1.0.0")
 ## ✅ Summary
 
 ### Document Status
-This Technical Development Document (TD) reflects the **current state** of FocusGarden as of **2025-11-10 (Week 5)**:
+This Technical Development Document (TD) reflects the **current state** of FocusGarden as of **2025-11-10**:
 
 **✅ Completed Phases:**
 - Week 1-2: Project setup + theme design
 - Week 3-4: UI wireframes + MVVM architecture + Room database
-- **Week 5 (Part 1):** Theme toggle + Sound effects system
 - **Week 5-6:** ✅ **MVP Development COMPLETED**
   - Phase A: Timer 倒计时核心逻辑 (✅ 完成 + Bug 修复)
   - Phase B: Session 数据保存 (✅ 完成)
   - Phase C: Journal 反思对话框 (✅ 完成)
   - Phase D: Journal 数据保存 (✅ 完成)
   - Phase E: Dashboard 数据读取 (✅ 完成)
+  - Phase F: Timer 时长调节 (✅ 完成)
+- **Week 7-8:** ✅ **Feature Integration COMPLETED**
+  - Dashboard 数据可视化 (✅ 完成 - Phase E)
+  - Heist Group 模拟数据展示 (✅ 完成)
 
 **⏳ Next Phase:**
-- Week 7-8: Dashboard data visualization + Heist group
 - Week 9: AI Summary module
 - Week 10: Testing & polish
 
@@ -935,8 +1041,8 @@ This Technical Development Document (TD) reflects the **current state** of Focus
 4. **Sound Effects System** for user feedback ✅
 5. **Timer + Journal workflow** ✅ **完成**
 6. **Dashboard analytics** ✅ **完成** (真实数据显示)
-7. **Heist Group challenge** (计划中)
-8. **AI Summary generation** (计划中)
+7. **Heist Group challenge** ✅ **完成** (模拟数据展示)
+8. **AI Summary generation** (计划中 - Week 9)
 
 ### Technical Decisions (Week 5-6)
 - ✅ Timer 前台计时 (Kotlin Flow + delay)
