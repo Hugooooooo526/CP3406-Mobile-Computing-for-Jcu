@@ -22,11 +22,13 @@ import java.util.Locale
  * 
  * Week 3-4: 基础结构
  * Week 5-6: ✅ 实现完整的计时器逻辑和数据持久化
+ * Phase F: ✅ Timer Duration Adjustment（时长调节功能）
  * 
  * 实现决策：
  * - 使用 Kotlin Flow + delay 实现倒计时（前台）
  * - 不使用 Foreground Service（保持简单）
  * - Category 在 Journal 时选择
+ * - 支持 5-60 分钟时长调节（步长 5 分钟）
  * 
  * @author Hugo Cui (14706438)
  * @since Week 5-6
@@ -37,6 +39,9 @@ class TimerViewModel(
 ) : ViewModel() {
     
     // Timer State
+    private val _focusDuration = MutableStateFlow(25) // Phase F: 默认25分钟
+    val focusDuration: StateFlow<Int> = _focusDuration.asStateFlow()
+    
     private val _remainingSeconds = MutableStateFlow(25 * 60) // 25分钟
     val remainingSeconds: StateFlow<Int> = _remainingSeconds.asStateFlow()
     
@@ -100,12 +105,24 @@ class TimerViewModel(
     
     /**
      * 重置计时器
+     * Phase F: 使用用户自定义的时长
      */
     fun resetTimer() {
         timerJob?.cancel()
-        _remainingSeconds.value = 25 * 60
+        _remainingSeconds.value = _focusDuration.value * 60
         _isRunning.value = false
         sessionStartTime = 0L
+    }
+    
+    /**
+     * Phase F: 设置专注时长（5-60分钟）
+     * 仅在未运行时可调节
+     */
+    fun setFocusDuration(minutes: Int) {
+        if (!_isRunning.value && minutes in 5..60) {
+            _focusDuration.value = minutes
+            _remainingSeconds.value = minutes * 60
+        }
     }
     
     /**

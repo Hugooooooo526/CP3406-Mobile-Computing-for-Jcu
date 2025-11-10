@@ -31,6 +31,7 @@ import com.jcu.focusgarden.viewmodel.TimerViewModel
  * 
  * Week 3-4: 静态 UI
  * Week 5-6: ✅ 集成音效反馈 + ViewModel 状态管理
+ * Phase F: ✅ 时长调节功能（Slider）
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,6 +45,9 @@ fun TimerScreen(
     val remainingSeconds by viewModel?.remainingSeconds?.collectAsState() ?: remember { mutableStateOf(25 * 60) }
     val isRunning by viewModel?.isRunning?.collectAsState() ?: remember { mutableStateOf(false) }
     val showReflectionDialog by viewModel?.showReflectionDialog?.collectAsState() ?: remember { mutableStateOf(false) }
+    
+    // Phase F: 观察用户选择的时长
+    val focusDuration by viewModel?.focusDuration?.collectAsState() ?: remember { mutableStateOf(25) }
     
     // 本地 UI 状态（不需要持久化）
     var ambientSoundEnabled by remember { mutableStateOf(false) }
@@ -94,8 +98,18 @@ fun TimerScreen(
                 // 大型圆形倒计时器
                 CircularTimer(
                     remainingSeconds = remainingSeconds,
-                    totalSeconds = 25 * 60,
+                    totalSeconds = focusDuration * 60, // Phase F: 使用自定义时长
                     modifier = Modifier.size(280.dp)
+                )
+                
+                // Phase F: 时长调节 Slider
+                DurationSlider(
+                    duration = focusDuration,
+                    onDurationChange = { viewModel?.setFocusDuration(it) },
+                    enabled = !isRunning, // 仅在未运行时可调节
+                    modifier = Modifier
+                        .fillMaxWidth(0.85f)
+                        .padding(horizontal = 16.dp)
                 )
                 
                 // 控制按钮
@@ -412,6 +426,91 @@ private fun ReflectionDialog(
             }
         }
     )
+}
+
+/**
+ * Phase F: Duration Slider 组件
+ * 允许用户调节专注时长（5-60分钟，步长5分钟）
+ */
+@Composable
+private fun DurationSlider(
+    duration: Int,
+    onDurationChange: (Int) -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // 标题
+        Text(
+            text = "Focus Duration",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = if (enabled) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            }
+        )
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        // 当前时长显示
+        Text(
+            text = "$duration min",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = if (enabled) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            }
+        )
+        
+        Spacer(modifier = Modifier.height(12.dp))
+        
+        // Slider
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // 最小值标签
+            Text(
+                text = "5",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            
+            // Slider 控件
+            Slider(
+                value = duration.toFloat(),
+                onValueChange = { onDurationChange(it.toInt()) },
+                valueRange = 5f..60f,
+                steps = 10, // 5-60分钟，步长5，共11个值，steps=10
+                enabled = enabled,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp),
+                colors = SliderDefaults.colors(
+                    thumbColor = MaterialTheme.colorScheme.primary,
+                    activeTrackColor = MaterialTheme.colorScheme.primary,
+                    inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    disabledThumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                    disabledActiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                )
+            )
+            
+            // 最大值标签
+            Text(
+                text = "60",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
