@@ -121,13 +121,13 @@ class MusicPlayerService : Service() {
                 
                 setOnPreparedListener {
                     start()
-                    isPlaying = true
+                    this@MusicPlayerService.isPlaying = true
                     Log.d(TAG, "Music started: ${musicNames[currentMusicIndex]}")
                 }
                 
                 setOnErrorListener { mp, what, extra ->
                     Log.e(TAG, "MediaPlayer error: what=$what, extra=$extra")
-                    isPlaying = false
+                    this@MusicPlayerService.isPlaying = false
                     false
                 }
             }
