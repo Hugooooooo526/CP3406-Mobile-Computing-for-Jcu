@@ -10,8 +10,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.IBinder
+import androidx.compose.runtime.mutableStateOf
 import com.jcu.focusgarden.data.preferences.SoundPreferences
 import com.jcu.focusgarden.data.preferences.ThemePreferences
+import com.jcu.focusgarden.service.MusicService
 import com.jcu.focusgarden.ui.navigation.FocusGardenApp
 import com.jcu.focusgarden.ui.theme.FocusGardenTheme
 import com.jcu.focusgarden.utils.SoundManager
@@ -23,6 +30,7 @@ import kotlinx.coroutines.launch
  * 
  * Week 5-6 Enhancement:
  * - 添加深色/浅色主题切换功能
+ * - 添加背景音乐播放功能
  * - 添加音效反馈系统
  * - 使用 DataStore 持久化偏好设置
  */
@@ -31,6 +39,27 @@ class MainActivity : ComponentActivity() {
     private lateinit var themePreferences: ThemePreferences
     private lateinit var soundPreferences: SoundPreferences
     private lateinit var soundManager: SoundManager
+    
+    // Music service related
+    private var musicService: MusicService? = null
+    private var isMusicBound = false
+    private val isMusicPlaying = mutableStateOf(false)
+    
+    // Service connection
+    private val musicConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as MusicService.MusicBinder
+            musicService = binder.getService()
+            isMusicBound = true
+            isMusicPlaying.value = musicService?.isPlaying() ?: false
+        }
+        
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isMusicBound = false
+            musicService = null
+            isMusicPlaying.value = false
+        }
+    }
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +87,17 @@ class MainActivity : ComponentActivity() {
                 }
             }
             
+            // 背景音乐切换函数
+            val onMusicToggle: () -> Unit = {
+                if (isMusicPlaying.value) {
+                    // 停止音乐
+                    stopMusicService()
+                } else {
+                    // 开始音乐
+                    startMusicService()
+                }
+            }
+            
             // 音效切换函数
             val onToggleSound: () -> Unit = {
                 coroutineScope.launch {
@@ -72,6 +112,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     FocusGardenApp(
                         onToggleTheme = onToggleTheme,
+                        onMusicToggle = onMusicToggle,
+                        isMusicPlaying = isMusicPlaying.value,
                         onToggleSound = onToggleSound,
                         soundManager = soundManager,
                         isSoundMuted = isSoundMuted
@@ -81,10 +123,56 @@ class MainActivity : ComponentActivity() {
         }
     }
     
+    /**
+     * Start music service
+     */
+    private fun startMusicService() {
+        val intent = Intent(this, MusicService::class.java).apply {
+            action = MusicService.ACTION_PLAY
+        }
+        startService(intent)
+        
+        // Bind service to get status updates
+        if (!isMusicBound) {
+            bindService(
+                Intent(this, MusicService::class.java),
+                musicConnection,
+                Context.BIND_AUTO_CREATE
+            )
+        } else {
+            musicService?.playRandomMusic()
+        }
+        
+        isMusicPlaying.value = true
+    }
+    
+    /**
+     * Stop music service
+     */
+    private fun stopMusicService() {
+        val intent = Intent(this, MusicService::class.java).apply {
+            action = MusicService.ACTION_STOP
+        }
+        startService(intent)
+        
+        if (isMusicBound) {
+            unbindService(musicConnection)
+            isMusicBound = false
+        }
+        
+        isMusicPlaying.value = false
+    }
+    
     override fun onDestroy() {
         super.onDestroy()
+        
+        // Unbind music service
+        if (isMusicBound) {
+            unbindService(musicConnection)
+            isMusicBound = false
+        }
+        
         // 释放音效资源
         soundManager.release()
     }
 }
-

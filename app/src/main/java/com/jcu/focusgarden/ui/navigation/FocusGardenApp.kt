@@ -18,6 +18,8 @@ import com.jcu.focusgarden.utils.SoundManager
  * 包含底部导航栏和导航控制
  * 
  * @param onToggleTheme 主题切换回调函数
+ * @param onMusicToggle 背景音乐切换回调函数
+ * @param isMusicPlaying 当前音乐播放状态
  * @param onToggleSound 音效切换回调函数
  * @param soundManager 音效管理器
  * @param isSoundMuted 当前音效状态
@@ -25,6 +27,10 @@ import com.jcu.focusgarden.utils.SoundManager
 @Composable
 fun FocusGardenApp(
     onToggleTheme: () -> Unit = {},
+
+    onMusicToggle: () -> Unit = {},
+    isMusicPlaying: Boolean = false,
+  
     onToggleSound: () -> Unit = {},
     soundManager: SoundManager? = null,
     isSoundMuted: Boolean = false
@@ -106,6 +112,9 @@ fun FocusGardenApp(
             navController = navController,
             modifier = Modifier.padding(innerPadding),
             onToggleTheme = onToggleTheme,
+            onMusicToggle = onMusicToggle,
+            isMusicPlaying = isMusicPlaying,
+
             onToggleSound = onToggleSound,
             soundManager = soundManager,
             isSoundMuted = isSoundMuted

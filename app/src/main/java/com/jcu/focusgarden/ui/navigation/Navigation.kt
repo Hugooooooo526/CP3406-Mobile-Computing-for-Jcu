@@ -25,6 +25,8 @@ sealed class Screen(val route: String) {
  * 管理应用内所有屏幕的导航
  * 
  * @param onToggleTheme 主题切换回调函数
+ * @param onMusicToggle 背景音乐切换回调函数
+ * @param isMusicPlaying 当前音乐播放状态
  * @param onToggleSound 音效切换回调函数
  * @param soundManager 音效管理器
  * @param isSoundMuted 当前音效状态
@@ -35,6 +37,8 @@ fun FocusGardenNavigation(
     navController: NavHostController = rememberNavController(),
     startDestination: String = Screen.Dashboard.route,
     onToggleTheme: () -> Unit = {},
+    onMusicToggle: () -> Unit = {},
+    isMusicPlaying: Boolean = false,
     onToggleSound: () -> Unit = {},
     soundManager: SoundManager? = null,
     isSoundMuted: Boolean = false
@@ -47,16 +51,9 @@ fun FocusGardenNavigation(
         // Dashboard Screen
         composable(Screen.Dashboard.route) {
             DashboardScreen(
-                onStartFocus = {
-                    navController.navigate(Screen.Timer.route)
-                },
-                onViewJournal = {
-                    // TODO: Week 5-6 - 实现 Journal 查看功能
-                },
-                onAISummary = {
-                    navController.navigate(Screen.AISummary.route)
-                },
                 onToggleTheme = onToggleTheme,
+                onMusicToggle = onMusicToggle,
+                isMusicPlaying = isMusicPlaying,
                 onToggleSound = onToggleSound,
                 isSoundMuted = isSoundMuted
             )

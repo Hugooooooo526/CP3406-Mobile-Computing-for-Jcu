@@ -109,7 +109,10 @@ A calm, bright home screen with white background and green accents. All elements
 - **TopAppBar:**
   - Title: "FocusGarden 🌱"
   - Background: Light green (#E8F5E9)
-  - Center-aligned title, no navigation drawer
+  - Center-aligned title
+  - Right actions: 
+    - Theme toggle button (🌓 icon)
+    - Music control button (🎵 icon, changes to ⏹️ when playing)
 
 - **Main Body (Column inside Scaffold):**
 
@@ -129,17 +132,10 @@ A calm, bright home screen with white background and green accents. All elements
      - Donut chart (60% Academic, 40% Personal)
      - Two legends with small colored circles (blue for academic, orange for personal)
 
-  4. **Card 4 – Quick Actions Row**
-     - Three evenly spaced ElevatedButtons with icons and labels:
-       - 🎯 Start Focus
-       - 📓 View Journal
-       - 🤖 AI Summary
-     - Buttons are Material 3 ElevatedButtons, rounded 16dp, filled with accent green (#2E7D32)
-
-  5. **Footer:** small motivational text "Consistency grows your garden 🌿"
+  4. **Footer:** small motivational text "Consistency grows your garden 🌿"
 
 **Component Map:**  
-`Scaffold → TopAppBar, Column, multiple Card (each containing Row, Column, Canvas, Text, Button)`
+`Scaffold → TopAppBar (with theme + music buttons), Column, multiple Card (each containing Row, Column, Canvas, Text)`
 
 ---
 
