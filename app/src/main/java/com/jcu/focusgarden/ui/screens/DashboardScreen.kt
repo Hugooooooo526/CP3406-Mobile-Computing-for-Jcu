@@ -26,6 +26,9 @@ import com.jcu.focusgarden.ui.theme.FocusGardenTheme
  * Week 5-6 Enhancement: 
  * - 添加主题切换按钮 (TopAppBar)
  * - 添加音乐控制按钮 (TopAppBar)
+ * Week 5-6 Enhancement:
+ * - 添加主题切换按钮
+ * - 添加音效开关按钮
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +36,9 @@ fun DashboardScreen(
     modifier: Modifier = Modifier,
     onToggleTheme: () -> Unit = {},
     onMusicToggle: () -> Unit = {},
-    isMusicPlaying: Boolean = false
+    isMusicPlaying: Boolean = false,
+    onToggleSound: () -> Unit = {},
+    isSoundMuted: Boolean = false
 ) {
     Scaffold(
         topBar = {
@@ -46,6 +51,15 @@ fun DashboardScreen(
                     )
                 },
                 actions = {
+                    // 音效开关按钮
+                    IconButton(onClick = onToggleSound) {
+                        Icon(
+                            imageVector = if (isSoundMuted) Icons.Default.VolumeOff else Icons.Default.VolumeUp,
+                            contentDescription = if (isSoundMuted) "Unmute Sound" else "Mute Sound",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                    
                     // 主题切换按钮
                     IconButton(onClick = onToggleTheme) {
                         Icon(

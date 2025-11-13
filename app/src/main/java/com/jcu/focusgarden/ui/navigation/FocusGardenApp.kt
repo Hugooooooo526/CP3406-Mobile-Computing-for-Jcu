@@ -11,6 +11,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.jcu.focusgarden.utils.SoundManager
 
 /**
  * FocusGarden 主应用组件
@@ -19,12 +20,20 @@ import androidx.navigation.compose.rememberNavController
  * @param onToggleTheme 主题切换回调函数
  * @param onMusicToggle 背景音乐切换回调函数
  * @param isMusicPlaying 当前音乐播放状态
+ * @param onToggleSound 音效切换回调函数
+ * @param soundManager 音效管理器
+ * @param isSoundMuted 当前音效状态
  */
 @Composable
 fun FocusGardenApp(
     onToggleTheme: () -> Unit = {},
+
     onMusicToggle: () -> Unit = {},
-    isMusicPlaying: Boolean = false
+    isMusicPlaying: Boolean = false,
+  
+    onToggleSound: () -> Unit = {},
+    soundManager: SoundManager? = null,
+    isSoundMuted: Boolean = false
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -104,7 +113,11 @@ fun FocusGardenApp(
             modifier = Modifier.padding(innerPadding),
             onToggleTheme = onToggleTheme,
             onMusicToggle = onMusicToggle,
-            isMusicPlaying = isMusicPlaying
+            isMusicPlaying = isMusicPlaying,
+
+            onToggleSound = onToggleSound,
+            soundManager = soundManager,
+            isSoundMuted = isSoundMuted
         )
     }
 }

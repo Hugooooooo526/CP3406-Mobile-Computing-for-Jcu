@@ -16,10 +16,12 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import androidx.compose.runtime.mutableStateOf
+import com.jcu.focusgarden.data.preferences.SoundPreferences
 import com.jcu.focusgarden.data.preferences.ThemePreferences
 import com.jcu.focusgarden.service.MusicService
 import com.jcu.focusgarden.ui.navigation.FocusGardenApp
 import com.jcu.focusgarden.ui.theme.FocusGardenTheme
+import com.jcu.focusgarden.utils.SoundManager
 import kotlinx.coroutines.launch
 
 /**
@@ -29,11 +31,14 @@ import kotlinx.coroutines.launch
  * Week 5-6 Enhancement:
  * - 添加深色/浅色主题切换功能
  * - 添加背景音乐播放功能
+ * - 添加音效反馈系统
  * - 使用 DataStore 持久化偏好设置
  */
 class MainActivity : ComponentActivity() {
     
     private lateinit var themePreferences: ThemePreferences
+    private lateinit var soundPreferences: SoundPreferences
+    private lateinit var soundManager: SoundManager
     
     // Music service related
     private var musicService: MusicService? = null
@@ -59,13 +64,21 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // 初始化主题偏好管理器
+        // 初始化偏好管理器
         themePreferences = ThemePreferences(this)
+        soundPreferences = SoundPreferences(this)
+        soundManager = SoundManager(this)
         
         setContent {
-            // 观察主题状态
+            // 观察主题和音效状态
             val isDarkTheme by themePreferences.isDarkTheme.collectAsState(initial = false)
+            val isSoundMuted by soundPreferences.isSoundMuted.collectAsState(initial = false)
             val coroutineScope = rememberCoroutineScope()
+            
+            // 同步音效静音状态到 SoundManager
+            androidx.compose.runtime.LaunchedEffect(isSoundMuted) {
+                soundManager.setMuted(isSoundMuted)
+            }
             
             // 主题切换函数
             val onToggleTheme: () -> Unit = {
@@ -82,6 +95,10 @@ class MainActivity : ComponentActivity() {
                 } else {
                     // 开始音乐
                     startMusicService()
+            // 音效切换函数
+            val onToggleSound: () -> Unit = {
+                coroutineScope.launch {
+                    soundPreferences.toggleSound()
                 }
             }
             
@@ -93,7 +110,10 @@ class MainActivity : ComponentActivity() {
                     FocusGardenApp(
                         onToggleTheme = onToggleTheme,
                         onMusicToggle = onMusicToggle,
-                        isMusicPlaying = isMusicPlaying.value
+                        isMusicPlaying = isMusicPlaying.value,
+                        onToggleSound = onToggleSound,
+                        soundManager = soundManager,
+                        isSoundMuted = isSoundMuted
                     )
                 }
             }
@@ -148,5 +168,10 @@ class MainActivity : ComponentActivity() {
             unbindService(musicConnection)
             isMusicBound = false
         }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        // 释放音效资源
+        soundManager.release()
     }
 }
