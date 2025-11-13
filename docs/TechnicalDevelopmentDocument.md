@@ -129,12 +129,12 @@ A calm, bright home screen with white background and green accents. All elements
      - Donut chart (60% Academic, 40% Personal)
      - Two legends with small colored circles (blue for academic, orange for personal)
 
-  4. **Card 4 – Quick Actions Row**
-     - Three evenly spaced ElevatedButtons with icons and labels:
-       - 🎯 Start Focus
-       - 📓 View Journal
-       - 🤖 AI Summary
+  4. **Card 4 – Quick Actions Grid (2x2)**
+     - Four evenly spaced ElevatedButtons in a 2x2 grid with icons and labels:
+       - Row 1: 🎯 Start Focus | 📓 View Journal
+       - Row 2: 🤖 AI Summary | 🎵 Focus Music
      - Buttons are Material 3 ElevatedButtons, rounded 16dp, filled with accent green (#2E7D32)
+     - Music button changes color/icon when playing (⏹️ Stop)
 
   5. **Footer:** small motivational text "Consistency grows your garden 🌿"
 

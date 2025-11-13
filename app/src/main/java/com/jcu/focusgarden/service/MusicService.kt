@@ -17,25 +17,25 @@ import com.jcu.focusgarden.MainActivity
 import com.jcu.focusgarden.R
 
 /**
- * MusicPlayerService - 背景音乐播放服务
- * 使用 Foreground Service 确保音乐在后台持续播放
+ * MusicService - Background music player service
+ * Use Foreground Service to ensure music continues to play in the background
  * 
  * Week 5-6 Enhancement Feature #3
  * 
- * 功能：
- * - 随机播放白噪音（雨声、海浪、森林、溪流）
- * - 循环播放
- * - 跨页面播放
- * - 一键开始/停止
+ * Features:
+ * - Play random white noise (rain sounds, ocean waves, forest sounds, stream sounds)
+ * - Loop play
+ * - Cross-page play
+ * - Start/stop button
  */
-class MusicPlayerService : Service() {
+class MusicService : Service() {
     
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
     private var currentMusicIndex = -1
     
-    // 音乐资源列表
-    // 注意：Android 会自动将文件名中的连字符(-) 转换为下划线(_)
+    // Music resource list
+    // Note: Android automatically converts the hyphen (-) in the filename to an underscore (_)
     private val musicList = listOf(
         R.raw.copyright_free_rain_sounds_331497,    // 7 minutes
         R.raw.ocean_waves_sound_01_321570,          // 1:14 minutes
@@ -43,7 +43,7 @@ class MusicPlayerService : Service() {
         R.raw.water_small_stream_25614              // 37 seconds
     )
     
-    // 音乐名称（用于通知显示）
+    // Music name (used for notification display)
     private val musicNames = listOf(
         "Rain Sounds 🌧️",
         "Ocean Waves 🌊",
@@ -54,7 +54,7 @@ class MusicPlayerService : Service() {
     private val binder = MusicBinder()
     
     companion object {
-        private const val TAG = "MusicPlayerService"
+        private const val TAG = "MusicService"
         private const val NOTIFICATION_ID = 1001
         private const val CHANNEL_ID = "focus_music_channel"
         private const val CHANNEL_NAME = "Focus Music"
@@ -65,12 +65,12 @@ class MusicPlayerService : Service() {
     }
     
     inner class MusicBinder : Binder() {
-        fun getService(): MusicPlayerService = this@MusicPlayerService
+        fun getService(): MusicService = this@MusicService
     }
     
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "MusicPlayerService created")
+        Log.d(TAG, "MusicService created")
         createNotificationChannel()
     }
     
@@ -93,11 +93,11 @@ class MusicPlayerService : Service() {
     }
     
     /**
-     * 播放随机音乐
+     * Play random music
      */
     fun playRandomMusic() {
         try {
-            // 随机选择一首音乐（确保不重复上一首）
+            // Randomly select a song (ensure it does not repeat the last one)
             val newIndex = if (musicList.size > 1) {
                 var index: Int
                 do {
@@ -111,28 +111,28 @@ class MusicPlayerService : Service() {
             currentMusicIndex = newIndex
             val musicResource = musicList[currentMusicIndex]
             
-            // 释放之前的 MediaPlayer
+            // Release the previous MediaPlayer
             mediaPlayer?.release()
             
-            // 创建新的 MediaPlayer
+            // Create a new MediaPlayer
             mediaPlayer = MediaPlayer.create(this, musicResource)?.apply {
-                isLooping = true // 循环播放
-                setVolume(0.7f, 0.7f) // 设置音量为70%
+                isLooping = true // Loop play
+                setVolume(0.7f, 0.7f) // Set volume to 70%
                 
                 setOnPreparedListener {
                     start()
-                    this@MusicPlayerService.isPlaying = true
+                    this@MusicService.isPlaying = true
                     Log.d(TAG, "Music started: ${musicNames[currentMusicIndex]}")
                 }
                 
                 setOnErrorListener { mp, what, extra ->
                     Log.e(TAG, "MediaPlayer error: what=$what, extra=$extra")
-                    this@MusicPlayerService.isPlaying = false
+                    this@MusicService.isPlaying = false
                     false
                 }
             }
             
-            // 启动前台服务
+            // Start the foreground service
             startForeground(NOTIFICATION_ID, createNotification())
             
         } catch (e: Exception) {
@@ -142,7 +142,7 @@ class MusicPlayerService : Service() {
     }
     
     /**
-     * 停止音乐
+     * Stop music
      */
     fun stopMusic() {
         try {
@@ -158,7 +158,7 @@ class MusicPlayerService : Service() {
             
             Log.d(TAG, "Music stopped")
             
-            // 停止前台服务
+            // Stop the foreground service
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
             
@@ -168,12 +168,12 @@ class MusicPlayerService : Service() {
     }
     
     /**
-     * 获取播放状态
+     * Get play status
      */
     fun isPlaying(): Boolean = isPlaying
     
     /**
-     * 获取当前音乐名称
+     * Get current music name
      */
     fun getCurrentMusicName(): String {
         return if (currentMusicIndex >= 0 && currentMusicIndex < musicNames.size) {
@@ -184,14 +184,14 @@ class MusicPlayerService : Service() {
     }
     
     /**
-     * 创建通知渠道（Android 8.0+）
+     * Create notification channel (Android 8.0+)
      */
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_LOW // 低重要性，不打扰用户
+                NotificationManager.IMPORTANCE_LOW // Low importance, do not disturb user
             ).apply {
                 description = "Background music for focus sessions"
                 setShowBadge(false)
@@ -203,10 +203,10 @@ class MusicPlayerService : Service() {
     }
     
     /**
-     * 创建前台服务通知
+     * Create foreground service notification
      */
     private fun createNotification(): Notification {
-        // 点击通知时打开应用
+        // Click notification to open the app
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
@@ -217,8 +217,8 @@ class MusicPlayerService : Service() {
             PendingIntent.FLAG_IMMUTABLE
         )
         
-        // 停止按钮
-        val stopIntent = Intent(this, MusicPlayerService::class.java).apply {
+        // Stop button
+        val stopIntent = Intent(this, MusicService::class.java).apply {
             action = ACTION_STOP
         }
         val stopPendingIntent = PendingIntent.getService(
@@ -231,23 +231,16 @@ class MusicPlayerService : Service() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("🎵 Focus Music Playing")
             .setContentText(getCurrentMusicName())
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // 使用应用图标
+            .setSmallIcon(R.drawable.ic_launcher_foreground) // Use app icon
             .setContentIntent(pendingIntent)
             .addAction(
                 android.R.drawable.ic_media_pause,
                 "Stop",
                 stopPendingIntent
             )
-            .setOngoing(true) // 不可滑动删除
-            .setSilent(true) // 静默通知
+            .setOngoing(true) // Not swipe-able
+            .setSilent(true) // Silent notification
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
     }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        stopMusic()
-        Log.d(TAG, "MusicPlayerService destroyed")
-    }
-}
-
+}    

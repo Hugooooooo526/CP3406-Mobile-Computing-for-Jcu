@@ -31,7 +31,7 @@
         
         <!-- 背景音乐播放服务 -->
         <service
-            android:name=".service.MusicPlayerService"
+            android:name=".service.MusicService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback">

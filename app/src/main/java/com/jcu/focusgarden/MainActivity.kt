@@ -17,7 +17,7 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import androidx.compose.runtime.mutableStateOf
 import com.jcu.focusgarden.data.preferences.ThemePreferences
-import com.jcu.focusgarden.service.MusicPlayerService
+import com.jcu.focusgarden.service.MusicService
 import com.jcu.focusgarden.ui.navigation.FocusGardenApp
 import com.jcu.focusgarden.ui.theme.FocusGardenTheme
 import kotlinx.coroutines.launch
@@ -35,15 +35,15 @@ class MainActivity : ComponentActivity() {
     
     private lateinit var themePreferences: ThemePreferences
     
-    // 音乐服务相关
-    private var musicService: MusicPlayerService? = null
+    // Music service related
+    private var musicService: MusicService? = null
     private var isMusicBound = false
     private val isMusicPlaying = mutableStateOf(false)
     
-    // 服务连接
+    // Service connection
     private val musicConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            val binder = service as MusicPlayerService.MusicBinder
+            val binder = service as MusicService.MusicBinder
             musicService = binder.getService()
             isMusicBound = true
             isMusicPlaying.value = musicService?.isPlaying() ?: false
@@ -101,18 +101,18 @@ class MainActivity : ComponentActivity() {
     }
     
     /**
-     * 启动音乐服务
+     * Start music service
      */
     private fun startMusicService() {
-        val intent = Intent(this, MusicPlayerService::class.java).apply {
-            action = MusicPlayerService.ACTION_PLAY
+        val intent = Intent(this, MusicService::class.java).apply {
+            action = MusicService.ACTION_PLAY
         }
         startService(intent)
         
-        // 绑定服务以获取状态更新
+        // Bind service to get status updates
         if (!isMusicBound) {
             bindService(
-                Intent(this, MusicPlayerService::class.java),
+                Intent(this, MusicService::class.java),
                 musicConnection,
                 Context.BIND_AUTO_CREATE
             )
@@ -124,11 +124,11 @@ class MainActivity : ComponentActivity() {
     }
     
     /**
-     * 停止音乐服务
+     * Stop music service
      */
     private fun stopMusicService() {
-        val intent = Intent(this, MusicPlayerService::class.java).apply {
-            action = MusicPlayerService.ACTION_STOP
+        val intent = Intent(this, MusicService::class.java).apply {
+            action = MusicService.ACTION_STOP
         }
         startService(intent)
         
@@ -143,11 +143,10 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         
-        // 解绑音乐服务
+        // Unbind music service
         if (isMusicBound) {
             unbindService(musicConnection)
             isMusicBound = false
         }
     }
 }
-
