@@ -53,17 +53,7 @@ fun FocusGardenNavigation(
             DashboardScreen(
                 onToggleTheme = onToggleTheme,
                 onMusicToggle = onMusicToggle,
-                isMusicPlaying = isMusicPlaying
-                onStartFocus = {
-                    navController.navigate(Screen.Timer.route)
-                },
-                onViewJournal = {
-                    // TODO: Week 5-6 - 实现 Journal 查看功能
-                },
-                onAISummary = {
-                    navController.navigate(Screen.AISummary.route)
-                },
-                onToggleTheme = onToggleTheme,
+                isMusicPlaying = isMusicPlaying,
                 onToggleSound = onToggleSound,
                 isSoundMuted = isSoundMuted
             )
