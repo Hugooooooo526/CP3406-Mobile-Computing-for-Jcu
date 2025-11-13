@@ -11,10 +11,10 @@ import kotlinx.coroutines.launch
 
 /**
  * Heist Group ViewModel
- * 按照 TD 文档 MVVM 架构实现
+ * Implemented according to TD Document MVVM architecture
  * 
- * Week 3-4: 基础结构
- * Week 7-8: 将实现小组功能和数据同步
+ * Week 3-4: Basic structure
+ * Week 7-8: Simplified implementation with mock data
  */
 class HeistViewModel(
     private val groupRepository: GroupRepository
@@ -31,46 +31,47 @@ class HeistViewModel(
     val members: StateFlow<List<MemberProgress>> = _members.asStateFlow()
     
     init {
-        // TODO: Week 7-8 - 从数据库加载小组数据
+        // TODO: Week 7-8 - Load group data from database
         loadGroupData()
     }
     
     /**
-     * 加载小组数据
-     * Week 7-8 将从数据库加载真实数据
+     * Load group data
+     * Week 7-8: Updated to match new MemberProgress signature
      */
     private fun loadGroupData() {
         viewModelScope.launch {
-            // 模拟数据（Week 3-4 静态 UI）
+            // Mock data (Week 7-8 simplified implementation)
+            // MemberProgress(name, minutes, completed, target, initials)
             _members.value = listOf(
-                MemberProgress("Alex", 60, 0.6f, "AM"),
-                MemberProgress("Sara", 45, 0.45f, "SM"),
-                MemberProgress("John", 90, 0.9f, "JD"),
-                MemberProgress("Emma", 75, 0.75f, "EW")
+                MemberProgress("Alex Chen", 75, 5, 8, "AC"),
+                MemberProgress("Sara Kim", 50, 4, 8, "SK"),
+                MemberProgress("John Davis", 100, 6, 8, "JD"),
+                MemberProgress("Emma Wilson", 45, 3, 8, "EW")
             )
         }
     }
     
     /**
-     * 邀请新成员
+     * Invite new member
      */
     fun inviteMember(memberName: String) {
         viewModelScope.launch {
-            // TODO: Week 7-8 - 实现邀请逻辑
+            // TODO: Week 7-8 - Implement invite logic
         }
     }
     
     /**
-     * 给成员点赞
+     * Give thumbs up to member
      */
     fun thumbsUpMember(memberName: String) {
         viewModelScope.launch {
-            // TODO: Week 7-8 - 实现点赞逻辑
+            // TODO: Week 7-8 - Implement thumbs up logic
         }
     }
     
     /**
-     * 刷新小组数据
+     * Refresh group data
      */
     fun refreshGroupData() {
         loadGroupData()

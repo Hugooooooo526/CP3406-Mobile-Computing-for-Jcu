@@ -1,6 +1,11 @@
 package com.jcu.focusgarden
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.jcu.focusgarden.data.local.FocusGardenDatabase
@@ -15,18 +21,11 @@ import com.jcu.focusgarden.data.preferences.SoundPreferences
 import com.jcu.focusgarden.data.preferences.ThemePreferences
 import com.jcu.focusgarden.data.repository.JournalRepository
 import com.jcu.focusgarden.data.repository.SessionRepository
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
-import android.os.IBinder
-import androidx.compose.runtime.mutableStateOf
-import com.jcu.focusgarden.data.preferences.SoundPreferences
-import com.jcu.focusgarden.data.preferences.ThemePreferences
 import com.jcu.focusgarden.service.MusicService
 import com.jcu.focusgarden.ui.navigation.FocusGardenApp
 import com.jcu.focusgarden.ui.theme.FocusGardenTheme
 import com.jcu.focusgarden.utils.SoundManager
+import com.jcu.focusgarden.viewmodel.DashboardViewModel
 import com.jcu.focusgarden.viewmodel.TimerViewModel
 import kotlinx.coroutines.launch
 
@@ -53,7 +52,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var sessionRepository: SessionRepository
     private lateinit var journalRepository: JournalRepository
     private lateinit var timerViewModel: TimerViewModel
-    private lateinit var dashboardViewModel: com.jcu.focusgarden.viewmodel.DashboardViewModel
+    private lateinit var dashboardViewModel: DashboardViewModel
     // Music service related
     private var musicService: MusicService? = null
     private var isMusicBound = false
@@ -94,8 +93,8 @@ class MainActivity : ComponentActivity() {
             journalRepository = journalRepository
         )
         
-        // Week 5-6: 初始化 DashboardViewModel（Phase E）
-        dashboardViewModel = com.jcu.focusgarden.viewmodel.DashboardViewModel(
+        // Week 5-6: Initialize DashboardViewModel (Phase E)
+        dashboardViewModel = DashboardViewModel(
             sessionRepository = sessionRepository,
             journalRepository = journalRepository
         )
