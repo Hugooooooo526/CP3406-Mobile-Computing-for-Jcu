@@ -95,6 +95,9 @@ class MainActivity : ComponentActivity() {
                 } else {
                     // 开始音乐
                     startMusicService()
+                }
+            }
+            
             // 音效切换函数
             val onToggleSound: () -> Unit = {
                 coroutineScope.launch {
@@ -168,9 +171,7 @@ class MainActivity : ComponentActivity() {
             unbindService(musicConnection)
             isMusicBound = false
         }
-    }
-    override fun onDestroy() {
-        super.onDestroy()
+        
         // 释放音效资源
         soundManager.release()
     }
