@@ -20,8 +20,13 @@ import com.jcu.focusgarden.ui.theme.HeistYellow
 
 /**
  * Heist Group Challenge Screen
- * 按照 TD 文档 4.3.3 规范实现
- * 支持小组协作专注跟踪（3-5人）
+ * Implemented according to TD Document Section 4.3.3
+ * Supports group collaboration focus tracking (3-5 members)
+ * 
+ * Week 7-8: ✅ Simplified Implementation (Mock Data)
+ * - Display group goals and Streak
+ * - Show member progress list
+ * - Mock data for 4 members
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,14 +35,19 @@ fun HeistScreen(
     onNavigateBack: () -> Unit = {},
     onStartFocusWithTeam: () -> Unit = {}
 ) {
-    // 模拟数据（静态 UI）
-    val groupGoal = "Complete 8 Pomodoros Today"
-    val groupStreak = 3
+    // Week 7-8: Mock group data (simplified version)
+    val groupName = "Study Squad"
+    val groupGoal = "Complete 30 Pomodoros This Week"
+    val groupStreak = 5 // 5-day streak
+    val totalCompleted = 18 // 18 completed
+    val totalTarget = 30 // target 30
+    
+    // Mock 4 members (name, today's minutes, weekly progress, initials)
     val members = listOf(
-        MemberProgress("Alex", 60, 0.6f, "AM"),
-        MemberProgress("Sara", 45, 0.45f, "SM"),
-        MemberProgress("John", 90, 0.9f, "JD"),
-        MemberProgress("Emma", 75, 0.75f, "EW")
+        MemberProgress("Alex Chen", 75, 5, 8, "AC"),      // 75min today, 5/8 completed
+        MemberProgress("Sara Kim", 50, 4, 8, "SK"),       // 50min today, 4/8 completed  
+        MemberProgress("John Davis", 100, 6, 8, "JD"),    // 100min today, 6/8 completed
+        MemberProgress("Emma Wilson", 45, 3, 8, "EW")     // 45min today, 3/8 completed
     )
     
     Scaffold(
@@ -81,14 +91,17 @@ fun HeistScreen(
         ) {
             Spacer(modifier = Modifier.height(8.dp))
             
-            // 小组目标卡片
+            // Week 7-8: Group goal card (display mock data)
             GroupGoalCard(
+                groupName = groupName,
                 goal = groupGoal,
                 streak = groupStreak,
-                onInviteMember = { /* TODO */ }
+                completed = totalCompleted,
+                target = totalTarget,
+                onInviteMember = { /* Week 7-8: Mock feature */ }
             )
             
-            // 成员进度列表
+            // Member progress list
             MemberProgressList(
                 members = members,
                 onThumbsUp = { /* TODO */ }
@@ -96,7 +109,7 @@ fun HeistScreen(
             
             Spacer(modifier = Modifier.weight(1f))
             
-            // 底部区域
+            // Bottom section
             BottomSection(
                 onStartFocusWithTeam = onStartFocusWithTeam
             )
@@ -105,12 +118,16 @@ fun HeistScreen(
 }
 
 /**
- * 小组目标卡片
+ * Group Goal Card
+ * Week 7-8: Enhanced display of group statistics
  */
 @Composable
 private fun GroupGoalCard(
+    groupName: String,
     goal: String,
     streak: Int,
+    completed: Int,
+    target: Int,
     onInviteMember: () -> Unit
 ) {
     Card(
@@ -130,15 +147,53 @@ private fun GroupGoalCard(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // 目标标题
+            // Week 7-8: Group name
             Text(
-                text = goal,
-                style = MaterialTheme.typography.titleLarge,
+                text = "🎯 $groupName",
+                style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
             
-            // Streak 指示器
+            // Goal description
+            Text(
+                text = goal,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            
+            // Week 7-8: Progress bar
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Team Progress",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "$completed / $target",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                LinearProgressIndicator(
+                    progress = completed.toFloat() / target,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            }
+            
+            // Streak indicator
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -155,7 +210,7 @@ private fun GroupGoalCard(
                 )
             }
             
-            // 邀请成员按钮
+            // Invite member button
             OutlinedButton(
                 onClick = onInviteMember,
                 modifier = Modifier.fillMaxWidth(),
@@ -179,7 +234,7 @@ private fun GroupGoalCard(
 }
 
 /**
- * 成员进度列表
+ * Member Progress List
  */
 @Composable
 private fun MemberProgressList(
@@ -219,7 +274,8 @@ private fun MemberProgressList(
 }
 
 /**
- * 单个成员进度项
+ * Individual Member Progress Item
+ * Week 7-8: Display member's today minutes and weekly progress
  */
 @Composable
 private fun MemberProgressItem(
@@ -232,7 +288,7 @@ private fun MemberProgressItem(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // 头像（缩写）
+        // Avatar (initials)
         Box(
             modifier = Modifier
                 .size(48.dp)
@@ -250,11 +306,12 @@ private fun MemberProgressItem(
         
         Spacer(modifier = Modifier.width(16.dp))
         
-        // 姓名和进度
+        // Week 7-8: Name, today's minutes and weekly progress
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
+            // Name and today's minutes
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
@@ -265,25 +322,46 @@ private fun MemberProgressItem(
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = "${member.minutes} min",
-                    style = MaterialTheme.typography.bodyMedium,
+                    text = "${member.minutes} min today",
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             
-            LinearProgressIndicator(
-                progress = member.progress,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.primaryContainer,
-            )
+            // Weekly progress bar
+            Column(
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "This Week",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "${member.completed}/${member.target}",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                LinearProgressIndicator(
+                    progress = member.progress,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primaryContainer,
+                )
+            }
         }
         
         Spacer(modifier = Modifier.width(12.dp))
         
-        // 点赞按钮
+        // Thumbs up button
         IconButton(
             onClick = onThumbsUp,
             modifier = Modifier.size(40.dp)
@@ -299,7 +377,7 @@ private fun MemberProgressItem(
 }
 
 /**
- * 底部区域
+ * Bottom Section
  */
 @Composable
 private fun BottomSection(
@@ -336,7 +414,7 @@ private fun BottomSection(
             )
         }
         
-        // 激励文字
+        // Motivational text
         Text(
             text = "Small wins together make big growth 🌱",
             style = MaterialTheme.typography.bodyMedium,
@@ -346,14 +424,19 @@ private fun BottomSection(
 }
 
 /**
- * 成员进度数据类
+ * Member Progress Data Class
+ * Week 7-8: Added weekly completed count and target
  */
 data class MemberProgress(
     val name: String,
-    val minutes: Int,
-    val progress: Float, // 0.0 - 1.0
+    val minutes: Int,          // Today's minutes
+    val completed: Int,        // Weekly completed Pomodoros
+    val target: Int,           // Weekly target Pomodoros
     val initials: String
-)
+) {
+    val progress: Float
+        get() = if (target > 0) completed.toFloat() / target else 0f
+}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

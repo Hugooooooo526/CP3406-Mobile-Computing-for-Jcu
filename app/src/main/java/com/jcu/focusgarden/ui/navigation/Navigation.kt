@@ -8,6 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.jcu.focusgarden.ui.screens.*
 import com.jcu.focusgarden.utils.SoundManager
+import com.jcu.focusgarden.viewmodel.TimerViewModel
+import com.jcu.focusgarden.viewmodel.DashboardViewModel
 
 /**
  * Navigation Routes
@@ -30,6 +32,8 @@ sealed class Screen(val route: String) {
  * @param onToggleSound 音效切换回调函数
  * @param soundManager 音效管理器
  * @param isSoundMuted 当前音效状态
+ * @param timerViewModel Timer 功能的 ViewModel (Week 5-6 MVP)
+ * @param dashboardViewModel Dashboard 功能的 ViewModel (Week 5-6 Phase E)
  */
 @Composable
 fun FocusGardenNavigation(
@@ -41,7 +45,9 @@ fun FocusGardenNavigation(
     isMusicPlaying: Boolean = false,
     onToggleSound: () -> Unit = {},
     soundManager: SoundManager? = null,
-    isSoundMuted: Boolean = false
+    isSoundMuted: Boolean = false,
+    timerViewModel: TimerViewModel? = null,
+    dashboardViewModel: DashboardViewModel? = null
 ) {
     NavHost(
         navController = navController,
@@ -55,7 +61,8 @@ fun FocusGardenNavigation(
                 onMusicToggle = onMusicToggle,
                 isMusicPlaying = isMusicPlaying,
                 onToggleSound = onToggleSound,
-                isSoundMuted = isSoundMuted
+                isSoundMuted = isSoundMuted,
+                viewModel = dashboardViewModel
             )
         }
         
@@ -65,7 +72,8 @@ fun FocusGardenNavigation(
                 onNavigateBack = {
                     navController.popBackStack()
                 },
-                soundManager = soundManager
+                soundManager = soundManager,
+                viewModel = timerViewModel
             )
         }
         

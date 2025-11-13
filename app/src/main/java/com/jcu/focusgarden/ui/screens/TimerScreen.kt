@@ -22,26 +22,42 @@ import androidx.compose.ui.unit.sp
 import com.jcu.focusgarden.R
 import com.jcu.focusgarden.ui.theme.FocusGardenTheme
 import com.jcu.focusgarden.utils.SoundManager
+import com.jcu.focusgarden.viewmodel.TimerViewModel
 
 /**
  * Timer Screen - Focus Session
  * 按照 TD 文档 4.3.2 规范实现
  * 提供 Pomodoro 风格的专注计时器
  * 
- * Week 5-6 Enhancement: 集成音效反馈
+ * Week 3-4: 静态 UI
+ * Week 5-6: ✅ 集成音效反馈 + ViewModel 状态管理
+ * Phase F: ✅ 时长调节功能（Slider）
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimerScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit = {},
-    soundManager: SoundManager? = null
+    soundManager: SoundManager? = null,
+    viewModel: TimerViewModel? = null
 ) {
-    // 静态 UI 状态（Week 3-4）
-    var isPlaying by remember { mutableStateOf(false) }
+    // Week 5-6: 使用 ViewModel 状态（替代本地 remember）
+    val remainingSeconds by viewModel?.remainingSeconds?.collectAsState() ?: remember { mutableStateOf(25 * 60) }
+    val isRunning by viewModel?.isRunning?.collectAsState() ?: remember { mutableStateOf(false) }
+    val showReflectionDialog by viewModel?.showReflectionDialog?.collectAsState() ?: remember { mutableStateOf(false) }
+    
+    // Phase F: 观察用户选择的时长
+    val focusDuration by viewModel?.focusDuration?.collectAsState() ?: remember { mutableStateOf(25) }
+    
+    // 本地 UI 状态（不需要持久化）
     var ambientSoundEnabled by remember { mutableStateOf(false) }
-    var showReflectionDialog by remember { mutableStateOf(false) }
-    var remainingSeconds by remember { mutableStateOf(25 * 60) } // 25分钟
+    
+    // Week 5-6: 监听计时器完成，播放音效
+    LaunchedEffect(remainingSeconds) {
+        if (remainingSeconds == 0 && isRunning) {
+            soundManager?.playComplete()
+        }
+    }
     
     Scaffold(
         topBar = {
@@ -82,8 +98,18 @@ fun TimerScreen(
                 // 大型圆形倒计时器
                 CircularTimer(
                     remainingSeconds = remainingSeconds,
-                    totalSeconds = 25 * 60,
+                    totalSeconds = focusDuration * 60, // Phase F: 使用自定义时长
                     modifier = Modifier.size(280.dp)
+                )
+                
+                // Phase F: 时长调节 Slider
+                DurationSlider(
+                    duration = focusDuration,
+                    onDurationChange = { viewModel?.setFocusDuration(it) },
+                    enabled = !isRunning, // 仅在未运行时可调节
+                    modifier = Modifier
+                        .fillMaxWidth(0.85f)
+                        .padding(horizontal = 16.dp)
                 )
                 
                 // 控制按钮
@@ -94,19 +120,14 @@ fun TimerScreen(
                     // Start/Pause FAB
                     FloatingActionButton(
                         onClick = { 
-                            isPlaying = !isPlaying
+                            // Week 5-6: 使用 ViewModel 方法
+                            viewModel?.toggleTimer()
                             
                             // 播放音效
-                            if (isPlaying) {
+                            if (!isRunning) {
                                 soundManager?.playStart() // 开始音效
                             } else {
                                 soundManager?.playPause() // 暂停音效
-                            }
-                            
-                            // 模拟完成后显示反思对话框
-                            if (remainingSeconds <= 0) {
-                                soundManager?.playComplete() // 完成音效
-                                showReflectionDialog = true
                             }
                         },
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -114,8 +135,8 @@ fun TimerScreen(
                         modifier = Modifier.size(64.dp)
                     ) {
                         Icon(
-                            imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                            contentDescription = if (isPlaying) "Pause" else "Start",
+                            imageVector = if (isRunning) Icons.Default.Pause else Icons.Default.PlayArrow,
+                            contentDescription = if (isRunning) "Pause" else "Start",
                             modifier = Modifier.size(32.dp)
                         )
                     }
@@ -123,8 +144,8 @@ fun TimerScreen(
                     // Reset Button
                     TextButton(
                         onClick = { 
-                            remainingSeconds = 25 * 60
-                            isPlaying = false
+                            // Week 5-6: 使用 ViewModel 方法
+                            viewModel?.resetTimer()
                             soundManager?.playCancel() // 取消/重置音效
                         }
                     ) {
@@ -149,12 +170,21 @@ fun TimerScreen(
     // 反思对话框
     if (showReflectionDialog) {
         ReflectionDialog(
-            onDismiss = { showReflectionDialog = false },
-            onSave = { mood, note ->
-                // TODO: 保存到数据库（Week 5-6）
-                showReflectionDialog = false
+            onDismiss = { 
+                // 关闭对话框，跳过保存
+                viewModel?.skipReflection()
             },
-            onSkip = { showReflectionDialog = false }
+            onSave = { category, mood, note ->
+                // Week 5-6: ✅ Phase C - 保存到数据库（包含 category）
+                viewModel?.saveReflection(
+                    category = category,
+                    mood = mood,
+                    note = note
+                )
+            },
+            onSkip = { 
+                viewModel?.skipReflection()
+            }
         )
     }
 }
@@ -268,14 +298,17 @@ private fun AmbientSoundToggle(
 /**
  * 反思对话框
  * 在专注会话结束后弹出
+ * 
+ * Week 5-6: ✅ Phase C - 添加 Category 选择
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ReflectionDialog(
     onDismiss: () -> Unit,
-    onSave: (mood: String, note: String) -> Unit,
+    onSave: (category: String, mood: String, note: String) -> Unit,
     onSkip: () -> Unit
 ) {
+    var selectedCategory by remember { mutableStateOf("Academic") }
     var selectedMood by remember { mutableStateOf("") }
     var noteText by remember { mutableStateOf("") }
     
@@ -295,9 +328,49 @@ private fun ReflectionDialog(
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                // Week 5-6: Phase C - Category 选择
+                Text(
+                    text = "📚 Category",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    // Academic 选项
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = selectedCategory == "Academic",
+                            onClick = { selectedCategory = "Academic" }
+                        )
+                        Text(
+                            text = "Academic",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    
+                    // Personal 选项
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = selectedCategory == "Personal",
+                            onClick = { selectedCategory = "Personal" }
+                        )
+                        Text(
+                            text = "Personal",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+                
                 // 心情选择
                 Text(
-                    text = "How do you feel?",
+                    text = "😊 How do you feel?",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -339,7 +412,7 @@ private fun ReflectionDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onSave(selectedMood, noteText) },
+                onClick = { onSave(selectedCategory, selectedMood, noteText) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
@@ -353,6 +426,91 @@ private fun ReflectionDialog(
             }
         }
     )
+}
+
+/**
+ * Phase F: Duration Slider 组件
+ * 允许用户调节专注时长（5-60分钟，步长5分钟）
+ */
+@Composable
+private fun DurationSlider(
+    duration: Int,
+    onDurationChange: (Int) -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // 标题
+        Text(
+            text = "Focus Duration",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = if (enabled) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            }
+        )
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        // 当前时长显示
+        Text(
+            text = "$duration min",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = if (enabled) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            }
+        )
+        
+        Spacer(modifier = Modifier.height(12.dp))
+        
+        // Slider
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // 最小值标签
+            Text(
+                text = "5",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            
+            // Slider 控件
+            Slider(
+                value = duration.toFloat(),
+                onValueChange = { onDurationChange(it.toInt()) },
+                valueRange = 5f..60f,
+                steps = 10, // 5-60分钟，步长5，共11个值，steps=10
+                enabled = enabled,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp),
+                colors = SliderDefaults.colors(
+                    thumbColor = MaterialTheme.colorScheme.primary,
+                    activeTrackColor = MaterialTheme.colorScheme.primary,
+                    inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    disabledThumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                    disabledActiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                )
+            )
+            
+            // 最大值标签
+            Text(
+                text = "60",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)

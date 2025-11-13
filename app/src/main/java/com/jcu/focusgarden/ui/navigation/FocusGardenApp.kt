@@ -12,6 +12,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.jcu.focusgarden.utils.SoundManager
+import com.jcu.focusgarden.viewmodel.AISummaryViewModel
+import com.jcu.focusgarden.viewmodel.DashboardViewModel
+import com.jcu.focusgarden.viewmodel.TimerViewModel
 
 /**
  * FocusGarden 主应用组件
@@ -23,6 +26,9 @@ import com.jcu.focusgarden.utils.SoundManager
  * @param onToggleSound 音效切换回调函数
  * @param soundManager 音效管理器
  * @param isSoundMuted 当前音效状态
+ * @param timerViewModel Timer 功能的 ViewModel (Week 5-6 MVP)
+ * @param dashboardViewModel Dashboard 功能的 ViewModel (Week 5-6 Phase E)
+ * @param aiSummaryViewModel AI Summary 功能的 ViewModel (Week 9)
  */
 @Composable
 fun FocusGardenApp(
@@ -33,7 +39,10 @@ fun FocusGardenApp(
   
     onToggleSound: () -> Unit = {},
     soundManager: SoundManager? = null,
-    isSoundMuted: Boolean = false
+    isSoundMuted: Boolean = false,
+    timerViewModel: TimerViewModel? = null,
+    dashboardViewModel: DashboardViewModel? = null,
+    aiSummaryViewModel: AISummaryViewModel? = null
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -84,11 +93,12 @@ fun FocusGardenApp(
                         label = { Text(item.title) },
                         selected = isSelected,
                         onClick = {
+                            // Fixed: Improved navigation for smooth transitions
                             navController.navigate(item.route) {
-                                // Pop up to the start destination of the graph to
-                                // avoid building up a large stack of destinations
-                                popUpTo(navController.graph.findStartDestination().id) {
+                                // Pop up to Dashboard (start) to clear back stack
+                                popUpTo(Screen.Dashboard.route) {
                                     saveState = true
+                                    inclusive = false
                                 }
                                 // Avoid multiple copies of the same destination
                                 launchSingleTop = true
@@ -117,7 +127,10 @@ fun FocusGardenApp(
 
             onToggleSound = onToggleSound,
             soundManager = soundManager,
-            isSoundMuted = isSoundMuted
+            isSoundMuted = isSoundMuted,
+            timerViewModel = timerViewModel,
+            dashboardViewModel = dashboardViewModel,
+            aiSummaryViewModel = aiSummaryViewModel
         )
     }
 }

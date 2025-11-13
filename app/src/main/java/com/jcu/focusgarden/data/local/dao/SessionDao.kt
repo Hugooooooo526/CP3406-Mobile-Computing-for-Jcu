@@ -64,6 +64,18 @@ interface SessionDao {
      */
     @Query("SELECT date, SUM(duration) as total FROM sessions WHERE date BETWEEN :startDate AND :endDate GROUP BY date ORDER BY date")
     suspend fun getWeeklyDurations(startDate: String, endDate: String): List<DailyDuration>
+    
+    /**
+     * 获取所有不重复的日期（用于计算 Streak）
+     */
+    @Query("SELECT DISTINCT date FROM sessions ORDER BY date DESC")
+    suspend fun getAllDistinctDates(): List<String>
+    
+    /**
+     * 获取按类别统计的总时长
+     */
+    @Query("SELECT category, SUM(duration) as total FROM sessions GROUP BY category")
+    suspend fun getCategoryDurations(): List<CategoryDuration>
 }
 
 /**
@@ -71,6 +83,14 @@ interface SessionDao {
  */
 data class DailyDuration(
     val date: String,
+    val total: Int
+)
+
+/**
+ * 类别时长数据类
+ */
+data class CategoryDuration(
+    val category: String,
     val total: Int
 )
 
