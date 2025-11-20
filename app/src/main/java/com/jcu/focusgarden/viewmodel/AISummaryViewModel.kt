@@ -1,86 +1,208 @@
 package com.jcu.focusgarden.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jcu.focusgarden.api.GeminiService
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import com.jcu.focusgarden.data.model.Recommendation
+import com.jcu.focusgarden.data.model.WeeklySummary
 import com.jcu.focusgarden.data.repository.SessionRepository
-import com.jcu.focusgarden.data.repository.JournalRepository
+import com.jcu.focusgarden.utils.PDFGenerator
+import com.jcu.focusgarden.utils.SummaryGenerator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 /**
  * AI Summary ViewModel
- * 按照 TD 文档 MVVM 架构实现
+ * Implemented according to TD Document MVVM architecture
  * 
- * Week 3-4: 基础结构
- * Week 9: 将实现 AI 总结生成逻辑（本地算法）
+ * Week 3-4: Basic structure
+ * Week 9: ✅ Implemented complete AI summary generation with local algorithm
+ * Week 9 Enhancement: ✅ Added Gemini API integration and PDF export
  */
-class AISummaryViewModel(
-    private val sessionRepository: SessionRepository,
-    private val journalRepository: JournalRepository
+@HiltViewModel
+class AISummaryViewModel @Inject constructor(
+    private val sessionRepository: SessionRepository
 ) : ViewModel() {
     
-    // Summary State
-    private val _totalFocusTime = MutableStateFlow(540)
-    val totalFocusTime: StateFlow<Int> = _totalFocusTime.asStateFlow()
+    // Week 9: Summary State (using new data models)
+    private val _weeklySummary = MutableStateFlow<WeeklySummary?>(null)
+    val weeklySummary: StateFlow<WeeklySummary?> = _weeklySummary.asStateFlow()
     
-    private val _averagePerDay = MutableStateFlow(77)
-    val averagePerDay: StateFlow<Int> = _averagePerDay.asStateFlow()
+    private val _recommendations = MutableStateFlow<List<Recommendation>>(emptyList())
+    val recommendations: StateFlow<List<Recommendation>> = _recommendations.asStateFlow()
     
-    private val _longestStreak = MutableStateFlow(5)
-    val longestStreak: StateFlow<Int> = _longestStreak.asStateFlow()
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
     
-    private val _peakDay = MutableStateFlow("Wednesday")
-    val peakDay: StateFlow<String> = _peakDay.asStateFlow()
+    // Week 9 Enhancement: AI insights and PDF generation state
+    private val _aiInsights = MutableStateFlow<String?>(null)
+    val aiInsights: StateFlow<String?> = _aiInsights.asStateFlow()
     
-    private val _productivityTrend = MutableStateFlow(listOf(45f, 60f, 75f, 90f, 85f, 70f, 55f))
-    val productivityTrend: StateFlow<List<Float>> = _productivityTrend.asStateFlow()
+    private val _pdfGenerationStatus = MutableStateFlow<String?>(null)
+    val pdfGenerationStatus: StateFlow<String?> = _pdfGenerationStatus.asStateFlow()
     
-    private val _recommendations = MutableStateFlow<List<String>>(emptyList())
-    val recommendations: StateFlow<List<String>> = _recommendations.asStateFlow()
+    private val geminiService = GeminiService()
     
     init {
-        // TODO: Week 9 - 从数据库加载并生成 AI 总结
-        generateSummary()
+        // Week 9: Load real data from database
+        loadWeeklySummary()
     }
     
     /**
-     * 生成周总结
-     * Week 9 将实现真实的 AI 总结算法（参考 TD 文档第 6 节）
+     * Load weekly summary from database
+     * Week 9: Implemented with real data and local AI algorithm
      */
-    private fun generateSummary() {
+    fun loadWeeklySummary() {
         viewModelScope.launch {
-            // 模拟数据（Week 3-4 静态 UI）
-            _totalFocusTime.value = 540
-            _averagePerDay.value = 77
-            _longestStreak.value = 5
-            _peakDay.value = "Wednesday"
-            _productivityTrend.value = listOf(45f, 60f, 75f, 90f, 85f, 70f, 55f)
+            _isLoading.value = true
+            android.util.Log.d("AISummaryViewModel", "Loading weekly summary...")
             
-            // 模拟建议
-            _recommendations.value = listOf(
-                "Schedule morning sessions for better focus",
-                "Try shorter breaks on Wednesday",
-                "Maintain weekend rest balance"
-            )
+            try {
+                // Get all sessions from database - use first() to get current value
+                val allSessions = sessionRepository.getAllSessions().first()
+                android.util.Log.d("AISummaryViewModel", "Loaded ${allSessions.size} sessions")
+                
+                // Calculate current streak
+                val allDates = sessionRepository.getAllDistinctDates()
+                val currentStreak = calculateStreak(allDates)
+                android.util.Log.d("AISummaryViewModel", "Current streak: $currentStreak days")
+                
+                // Generate weekly summary using SummaryGenerator
+                val summary = SummaryGenerator.generateWeeklySummary(
+                    allSessions = allSessions,
+                    currentStreak = currentStreak
+                )
+                _weeklySummary.value = summary
+                android.util.Log.d("AISummaryViewModel", "Summary generated: ${summary.totalFocusTime} minutes")
+                
+                // Generate recommendations
+                val recs = SummaryGenerator.generateRecommendations(summary)
+                _recommendations.value = recs
+                android.util.Log.d("AISummaryViewModel", "Generated ${recs.size} recommendations")
+                
+            } catch (e: Exception) {
+                android.util.Log.e("AISummaryViewModel", "Error loading summary: ${e.message}", e)
+                // Handle error: show empty state
+                _weeklySummary.value = WeeklySummary(0, 0, "N/A", 0, 0, 0, 0)
+                _recommendations.value = listOf(
+                    Recommendation(
+                        message = "Start your focus journey today! Complete your first session. ",
+                        priority = com.jcu.focusgarden.data.model.Priority.HIGH,
+                        actionable = true
+                    )
+                )
+            } finally {
+                _isLoading.value = false
+                android.util.Log.d("AISummaryViewModel", "Loading complete")
+            }
         }
     }
     
     /**
-     * 生成月度报告
+     * Calculate current streak from dates
+     * Same algorithm as DashboardViewModel
      */
-    fun generateMonthlyReport() {
-        viewModelScope.launch {
-            // TODO: Week 9 - 实现月度报告生成（PDF 导出）
+    private fun calculateStreak(allDates: List<String>): Int {
+        if (allDates.isEmpty()) return 0
+        
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        var streak = 0
+        val calendar = Calendar.getInstance()
+        var checkDate = dateFormat.format(calendar.time)
+        
+        while (allDates.contains(checkDate)) {
+            streak++
+            calendar.add(Calendar.DAY_OF_YEAR, -1)
+            checkDate = dateFormat.format(calendar.time)
+        }
+        
+        return streak
+    }
+    
+    /**
+     * Generate AI-powered insights using Gemini API
+     * Week 9 Enhancement
+     * @return AI insights text or null if failed
+     */
+    private suspend fun generateAIInsights(): String? {
+        val summary = _weeklySummary.value ?: return null
+        
+        android.util.Log.d("AISummaryViewModel", "Calling Gemini API for insights...")
+        return geminiService.generateInsights(summary).getOrNull().also { insights ->
+            if (insights != null) {
+                android.util.Log.d("AISummaryViewModel", "Gemini API returned ${insights.length} chars")
+            } else {
+                android.util.Log.w("AISummaryViewModel", "Gemini API returned null")
+            }
         }
     }
     
     /**
-     * 刷新总结
+     * Generate PDF report with optional AI insights
+     * Week 9 Enhancement
+     */
+    fun generatePDFReport(context: Context, includeAI: Boolean = true) {
+        viewModelScope.launch {
+            try {
+                android.util.Log.d("AISummaryViewModel", "Starting PDF generation...")
+                _pdfGenerationStatus.value = "Generating PDF report..."
+                
+                val summary = _weeklySummary.value ?: run {
+                    android.util.Log.e("AISummaryViewModel", "No summary data available")
+                    _pdfGenerationStatus.value = "No data available to generate report."
+                    return@launch
+                }
+                val recs = _recommendations.value
+                android.util.Log.d("AISummaryViewModel", "Summary: ${summary.totalFocusTime} min, ${recs.size} recommendations")
+                
+                // Generate AI insights if requested
+                var aiInsights: String? = null
+                if (includeAI) {
+                    android.util.Log.d("AISummaryViewModel", "Generating AI insights...")
+                    _pdfGenerationStatus.value = "Generating AI insights..."
+                    aiInsights = generateAIInsights()
+                    android.util.Log.d("AISummaryViewModel", "AI insights: ${aiInsights?.length ?: 0} chars")
+                }
+                
+                // Generate PDF
+                android.util.Log.d("AISummaryViewModel", "Creating PDF document...")
+                val pdfPath = PDFGenerator.generateWeeklyReport(
+                    context = context,
+                    summary = summary,
+                    recommendations = recs,
+                    aiInsights = aiInsights
+                )
+                
+                _pdfGenerationStatus.value = "PDF saved: $pdfPath"
+                android.util.Log.i("AISummaryViewModel", "PDF generation successful: $pdfPath")
+            } catch (e: Exception) {
+                android.util.Log.e("AISummaryViewModel", "PDF generation failed", e)
+                _pdfGenerationStatus.value = "PDF generation failed: ${e.message}"
+            }
+        }
+    }
+    
+    /**
+     * Clear PDF generation status
+     */
+    fun clearPDFStatus() {
+        _pdfGenerationStatus.value = null
+    }
+    
+    /**
+     * Refresh summary data
      */
     fun refreshSummary() {
-        generateSummary()
+        loadWeeklySummary()
     }
 }
 

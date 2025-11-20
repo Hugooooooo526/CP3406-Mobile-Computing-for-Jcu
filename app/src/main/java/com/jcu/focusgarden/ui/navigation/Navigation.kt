@@ -8,8 +8,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.jcu.focusgarden.ui.screens.*
 import com.jcu.focusgarden.utils.SoundManager
-import com.jcu.focusgarden.viewmodel.TimerViewModel
+import com.jcu.focusgarden.viewmodel.AISummaryViewModel
 import com.jcu.focusgarden.viewmodel.DashboardViewModel
+import com.jcu.focusgarden.viewmodel.TimerViewModel
 
 /**
  * Navigation Routes
@@ -34,6 +35,7 @@ sealed class Screen(val route: String) {
  * @param isSoundMuted 当前音效状态
  * @param timerViewModel Timer 功能的 ViewModel (Week 5-6 MVP)
  * @param dashboardViewModel Dashboard 功能的 ViewModel (Week 5-6 Phase E)
+ * @param aiSummaryViewModel AI Summary 功能的 ViewModel (Week 9)
  */
 @Composable
 fun FocusGardenNavigation(
@@ -47,7 +49,8 @@ fun FocusGardenNavigation(
     soundManager: SoundManager? = null,
     isSoundMuted: Boolean = false,
     timerViewModel: TimerViewModel? = null,
-    dashboardViewModel: DashboardViewModel? = null
+    dashboardViewModel: DashboardViewModel? = null,
+    aiSummaryViewModel: AISummaryViewModel? = null
 ) {
     NavHost(
         navController = navController,
@@ -89,15 +92,13 @@ fun FocusGardenNavigation(
             )
         }
         
-        // AI Summary Screen
+        // AI Summary Screen (Week 9: Integrated with ViewModel)
         composable(Screen.AISummary.route) {
             AISummaryScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 },
-                onGenerateMonthlyReport = {
-                    // TODO: Week 9 - 实现月度报告生成
-                }
+                viewModel = aiSummaryViewModel
             )
         }
     }

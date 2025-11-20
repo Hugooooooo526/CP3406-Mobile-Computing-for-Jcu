@@ -3,6 +3,8 @@ package com.jcu.focusgarden.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jcu.focusgarden.data.repository.SessionRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import com.jcu.focusgarden.data.repository.JournalRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,16 +18,11 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Dashboard ViewModel
- * 按照 TD 文档 MVVM 架构实现
- * 
- * Week 3-4: 基础结构
- * Week 5-6: ✅ Phase E - 实现完整的数据加载逻辑
- *   - E1: 今日专注时长
- *   - E2: Streak 计算
- *   - E3: 本周数据（7天柱状图）
- *   - E4: 学术/个人占比（饼图）
+ * Week 3-4: Basic structure
+ * Week 9: Added Hilt dependency injection
  */
-class DashboardViewModel(
+@HiltViewModel
+class DashboardViewModel @Inject constructor(
     private val sessionRepository: SessionRepository,
     private val journalRepository: JournalRepository
 ) : ViewModel() {

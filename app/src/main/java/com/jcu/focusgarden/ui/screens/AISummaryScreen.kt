@@ -1,5 +1,6 @@
 package com.jcu.focusgarden.ui.screens
 
+import android.content.Context
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,8 +9,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -17,20 +24,34 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.jcu.focusgarden.data.model.Recommendation
+import com.jcu.focusgarden.data.model.WeeklySummary
 import com.jcu.focusgarden.ui.theme.FocusGardenTheme
+import com.jcu.focusgarden.viewmodel.AISummaryViewModel
 
 /**
  * AI Summary Screen - Weekly Insights
- * 按照 TD 文档 4.3.4 规范实现
- * 自动生成的周总结报告和个性化建议（无聊天功能）
+ * Implemented according to TD Document Section 4.3.4
+ * Auto-generated weekly summary and personalized recommendations (no chat)
+ * 
+ * Week 9: ✅ Integrated with AISummaryViewModel for real data
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AISummaryScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit = {},
-    onGenerateMonthlyReport: () -> Unit = {}
+    viewModel: AISummaryViewModel? = null
 ) {
+    // Week 9: Observe ViewModel state
+    val weeklySummary by viewModel?.weeklySummary?.collectAsState() ?: remember { mutableStateOf(null) }
+    val recommendations by viewModel?.recommendations?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
+    val isLoading by viewModel?.isLoading?.collectAsState() ?: remember { mutableStateOf(false) }
+    
+    // Week 9 Enhancement: PDF generation state
+    val pdfStatus by viewModel?.pdfGenerationStatus?.collectAsState() ?: remember { mutableStateOf(null) }
+    val context = LocalContext.current
+    
     val scrollState = rememberScrollState()
     
     Scaffold(
@@ -59,35 +80,52 @@ fun AISummaryScreen(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(scrollState)
-        ) {
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            // Card 1 - 周总结
-            WeeklySummaryCard()
-            
-            // Card 2 - 下周建议
-            NextWeekRecommendationsCard()
-            
-            // CTA 按钮
-            GenerateMonthlyReportButton(
-                onClick = onGenerateMonthlyReport
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
+        // Week 9: Loading state or content
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(scrollState)
+            ) {
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Card 1 - Weekly Summary (with real data)
+                WeeklySummaryCard(summary = weeklySummary)
+                
+                // Card 2 - Recommendations (with real data)
+                NextWeekRecommendationsCard(recommendations = recommendations)
+                
+                // Week 9 Enhancement: PDF generation section
+                // Note: Gemini API disabled due to API key permissions
+                // PDF will generate with local recommendations only
+                PDFGenerationSection(
+                    onGeneratePDF = { viewModel?.generatePDFReport(context, includeAI = false) },
+                    pdfStatus = pdfStatus,
+                    onClearStatus = { viewModel?.clearPDFStatus() }
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
     }
 }
 
 /**
- * 周总结卡片
+ * Weekly Summary Card
+ * Week 9: Updated to use real data from WeeklySummary
  */
 @Composable
-private fun WeeklySummaryCard() {
+private fun WeeklySummaryCard(summary: WeeklySummary?) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -113,76 +151,73 @@ private fun WeeklySummaryCard() {
                 color = MaterialTheme.colorScheme.onSurface
             )
             
-            // 2x2 统计网格
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                StatItem(
-                    label = "Total Focus Time",
-                    value = "540 min",
-                    modifier = Modifier.weight(1f)
-                )
-                StatItem(
-                    label = "Average per Day",
-                    value = "77 min",
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                StatItem(
-                    label = "Longest Streak",
-                    value = "5 Days",
-                    modifier = Modifier.weight(1f)
-                )
-                StatItem(
-                    label = "Peak Day",
-                    value = "Wednesday",
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            
-            // 小型趋势图
-            Text(
-                text = "Productivity Trend",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            
-            ProductivityTrendChart(
-                dataPoints = listOf(45f, 60f, 75f, 90f, 85f, 70f, 55f)
-            )
-            
-            // 心情趋势
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            // Week 9: Display real data or empty state
+            if (summary != null) {
+                // 2x2 statistics grid
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    StatItem(
+                        label = "Total Focus Time",
+                        value = "${summary.totalFocusTime} min",
+                        modifier = Modifier.weight(1f)
+                    )
+                    StatItem(
+                        label = "Average per Day",
+                        value = "${summary.averageDailyFocus} min",
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    StatItem(
+                        label = "Current Streak",
+                        value = "${summary.currentStreak} Days",
+                        modifier = Modifier.weight(1f)
+                    )
+                    StatItem(
+                        label = "Peak Day",
+                        value = summary.peakDay,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                
+                // Category breakdown
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    StatItem(
+                        label = "Academic Time",
+                        value = "${summary.academicTime} min",
+                        modifier = Modifier.weight(1f)
+                    )
+                    StatItem(
+                        label = "Personal Time",
+                        value = "${summary.personalTime} min",
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            } else {
+                // Empty state
                 Text(
-                    text = "Mood Trend",
+                    text = "No data available yet. Complete your first focus session!",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(text = "🙂", style = MaterialTheme.typography.titleMedium)
-                    Text(text = "→", style = MaterialTheme.typography.titleMedium)
-                    Text(text = "😀", style = MaterialTheme.typography.titleMedium)
-                }
             }
+            
+            // Week 9: Removed trend chart and mood (simplified for MVP)
         }
     }
 }
 
 /**
- * 统计项组件
+ * Stat Item Component
  */
 @Composable
 private fun StatItem(
@@ -219,75 +254,14 @@ private fun StatItem(
     }
 }
 
-/**
- * 生产力趋势图
- */
-@Composable
-private fun ProductivityTrendChart(
-    dataPoints: List<Float>,
-    modifier: Modifier = Modifier
-) {
-    val maxValue = dataPoints.maxOrNull() ?: 1f
-    val normalizedPoints = dataPoints.map { it / maxValue }
-    
-    Canvas(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(100.dp)
-    ) {
-        val width = size.width
-        val height = size.height
-        val stepX = width / (dataPoints.size - 1)
-        
-        // 绘制网格线
-        for (i in 0..4) {
-            val y = height * i / 4
-            drawLine(
-                color = Color(0xFFE0E0E0),
-                start = Offset(0f, y),
-                end = Offset(width, y),
-                strokeWidth = 1.dp.toPx()
-            )
-        }
-        
-        // 绘制趋势线
-        val path = Path()
-        normalizedPoints.forEachIndexed { index, value ->
-            val x = index * stepX
-            val y = height * (1 - value)
-            
-            if (index == 0) {
-                path.moveTo(x, y)
-            } else {
-                path.lineTo(x, y)
-            }
-        }
-        
-        drawPath(
-            path = path,
-            color = Color(0xFF43A047),
-            style = Stroke(width = 3.dp.toPx())
-        )
-        
-        // 绘制数据点
-        normalizedPoints.forEachIndexed { index, value ->
-            val x = index * stepX
-            val y = height * (1 - value)
-            
-            drawCircle(
-                color = Color(0xFF2E7D32),
-                radius = 4.dp.toPx(),
-                center = Offset(x, y)
-            )
-        }
-    }
-}
+// Week 9: Productivity trend chart removed for MVP simplicity
 
 /**
- * 下周建议卡片
+ * Next Week Recommendations Card
+ * Week 9: Updated to use real recommendations from AI
  */
 @Composable
-private fun NextWeekRecommendationsCard() {
+private fun NextWeekRecommendationsCard(recommendations: List<Recommendation>) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -323,33 +297,45 @@ private fun NextWeekRecommendationsCard() {
                 )
             }
             
-            // 建议列表
-            RecommendationItem(
-                icon = Icons.Default.WbSunny,
-                text = "Schedule morning sessions for better focus"
-            )
-            
-            RecommendationItem(
-                icon = Icons.Default.Timer,
-                text = "Try shorter breaks on Wednesday"
-            )
-            
-            RecommendationItem(
-                icon = Icons.Default.Weekend,
-                text = "Maintain weekend rest balance"
-            )
+            // Week 9: Display real recommendations or empty state
+            if (recommendations.isNotEmpty()) {
+                recommendations.forEach { recommendation ->
+                    RecommendationItem(
+                        recommendation = recommendation
+                    )
+                }
+            } else {
+                Text(
+                    text = "Complete some focus sessions to get personalized recommendations!",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
 
 /**
- * 建议项组件
+ * Recommendation Item Component
+ * Week 9: Updated to use Recommendation data model with priority
  */
 @Composable
 private fun RecommendationItem(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    text: String
+    recommendation: Recommendation
 ) {
+    // Choose icon based on priority
+    val icon = when (recommendation.priority) {
+        com.jcu.focusgarden.data.model.Priority.HIGH -> Icons.Default.PriorityHigh
+        com.jcu.focusgarden.data.model.Priority.MEDIUM -> Icons.Default.Lightbulb
+        com.jcu.focusgarden.data.model.Priority.LOW -> Icons.Default.CheckCircle
+    }
+    
+    val iconColor = when (recommendation.priority) {
+        com.jcu.focusgarden.data.model.Priority.HIGH -> MaterialTheme.colorScheme.error
+        com.jcu.focusgarden.data.model.Priority.MEDIUM -> MaterialTheme.colorScheme.primary
+        com.jcu.focusgarden.data.model.Priority.LOW -> MaterialTheme.colorScheme.tertiary
+    }
+    
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -358,11 +344,11 @@ private fun RecommendationItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
+            tint = iconColor,
             modifier = Modifier.size(24.dp)
         )
         Text(
-            text = text,
+            text = recommendation.message,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -370,34 +356,93 @@ private fun RecommendationItem(
 }
 
 /**
- * 生成月度报告按钮
+ * PDF Generation Section
+ * Week 9 Enhancement: Generate and export PDF reports
  */
 @Composable
-private fun GenerateMonthlyReportButton(
-    onClick: () -> Unit
+private fun PDFGenerationSection(
+    onGeneratePDF: () -> Unit,
+    pdfStatus: String?,
+    onClearStatus: () -> Unit
 ) {
-    ElevatedButton(
-        onClick = onClick,
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .height(56.dp),
-        colors = ButtonDefaults.elevatedButtonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
-        Icon(
-            imageVector = Icons.Default.FileDownload,
-            contentDescription = null,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = "Generate Monthly Report (PDF)",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "📄 Export Report",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            
+            Text(
+                text = "Generate a PDF report with weekly summary and recommendations",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            
+            Button(
+                onClick = onGeneratePDF,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FileDownload,
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Generate PDF Report")
+            }
+            
+            // Status message
+            if (pdfStatus != null) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (pdfStatus.contains("saved"))
+                            MaterialTheme.colorScheme.tertiaryContainer
+                        else if (pdfStatus.contains("failed"))
+                            MaterialTheme.colorScheme.errorContainer
+                        else MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = pdfStatus,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.weight(1f)
+                        )
+                        if (!pdfStatus.contains("Generating")) {
+                            IconButton(onClick = onClearStatus) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Clear",
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

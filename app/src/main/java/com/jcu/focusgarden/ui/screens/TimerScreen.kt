@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,6 +33,7 @@ import com.jcu.focusgarden.viewmodel.TimerViewModel
  * Week 3-4: 静态 UI
  * Week 5-6: ✅ 集成音效反馈 + ViewModel 状态管理
  * Phase F: ✅ 时长调节功能（Slider）
+ * Enhancement 2025-11-20: ✅ 跳过功能（统计原定时长）
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -117,6 +119,21 @@ fun TimerScreen(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Reset Button
+                    TextButton(
+                        onClick = { 
+                            // Week 5-6: 使用 ViewModel 方法
+                            viewModel?.resetTimer()
+                            soundManager?.playCancel() // 取消/重置音效
+                        },
+                        enabled = !isRunning
+                    ) {
+                        Text(
+                            text = stringResource(R.string.reset),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                    
                     // Start/Pause FAB
                     FloatingActionButton(
                         onClick = { 
@@ -141,16 +158,28 @@ fun TimerScreen(
                         )
                     }
                     
-                    // Reset Button
-                    TextButton(
+                    // Skip Button (Enhancement 2025-11-20)
+                    // TEST MODE: 始终显示以便快速测试 (点击 Start 后立即可用)
+                    // TODO: 生产环境可改为 if (isRunning || remainingSeconds < focusDuration * 60)
+                    FilledTonalButton(
                         onClick = { 
-                            // Week 5-6: 使用 ViewModel 方法
-                            viewModel?.resetTimer()
-                            soundManager?.playCancel() // 取消/重置音效
-                        }
+                            viewModel?.skipTimer()
+                            soundManager?.playComplete() // 完成音效
+                        },
+                        enabled = isRunning || remainingSeconds < focusDuration * 60, // 只在运行或已开始时启用
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
                     ) {
+                        Icon(
+                            imageVector = Icons.Default.SkipNext,
+                            contentDescription = "Skip",
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = stringResource(R.string.reset),
+                            text = "Skip",
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
