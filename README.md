@@ -16,17 +16,17 @@ The app helps students manage study time through Pomodoro techniques, self-refle
 | 📓 **Focus Journal** | Post-session emotion and learning note recording |
 | 📊 **Dashboard** | Visual display of daily/weekly progress, streaks, academic/personal ratio |
 | 🧑‍🤝‍🧑 **Heist Group** | 3-5 person group collaboration tracking with shared goals |
-| 🤖 **AI Summary** | Auto-generated weekly/monthly study reports and personalized recommendations |
+| 🤖 **AI Summary** | Auto-generated weekly/monthly study reports and personalized recommendations (powered by Gemini API keys via an AI empower capability) |
 
 ## 🚀 Enhancement Features (Week 5-6)
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| 🌓 **Dark/Light Theme** | 📋 Designed | Toggle between dark and light modes for different lighting environments |
-| 🔊 **Sound Effects** | 📋 Designed | Nature-themed audio feedback for key actions (start, pause, complete) |
-| 🎵 **Background Music** | 📋 Designed | Ambient music player with rain, ocean, forest, and stream sounds |
-| 🌍 **Multi-Language** | 📋 Designed | English and Simplified Chinese UI support with in-app switcher |
-| ⏱️ **Time Picker + Stopwatch** | 📋 Designed | iOS-style time selector (5-120 min) and count-up stopwatch mode |
+| 🌓 **Dark/Light Theme** | ✅ Completed | Toggle between dark and light modes for different lighting environments |
+| 🔊 **Sound Effects** | ✅ Completed | Nature-themed audio feedback for key actions (start, pause, complete) |
+| 🎵 **Background Music** | ✅ Completed | Ambient music player with rain, ocean, forest, and stream sounds |
+| 🌍 **Multi-Language** | ✅ Completed | English and Simplified Chinese UI support with in-app switcher |
+| ⏱️ **Time Picker + Stopwatch** | ✅ Completed | iOS-style time selector (5-120 min) and count-up stopwatch mode |
 
 ---
 
@@ -116,18 +116,50 @@ cd CP3406-Mobile-Computing-for-Jcu
 
 ---
 
+## 📱 How to Use
+
+- **Focus Timer**
+  - Set duration with the time picker and press Start.
+  - Use Pause/Resume during the session; Break starts automatically.
+  - Long-press or tap Reset to end early.
+
+- **Focus Journal**
+  - After a session, select mood, add notes, and save.
+  - View and edit entries from the Journal list.
+
+- **Dashboard**
+  - Check today/weekly minutes, streaks, and category ratio.
+  - Filter by date range from the top controls.
+
+- **Heist Group**
+  - Create or join a group (3–5 members).
+  - Share goals; members’ completed sessions contribute to group progress.
+
+- **AI Summary**
+  - Generate weekly/monthly summaries and tips from your study history.
+  - Powered by Gemini API keys via an AI empower capability.
+
+- **Themes, Audio, Language**
+  - Switch Dark/Light theme in Settings.
+  - Enable sound effects and background ambient music in Settings.
+  - Change app language (English/Simplified Chinese) in Settings.
+
+### Optional Configuration: Gemini API Key
+
+If you use the AI Summary capability, provide a Gemini API key (e.g., via an in-app setting or a secure config field) to enable text generation.
+
 ## 📅 Development Timeline
 
 | Week | Phase | Status |
 |------|-------|--------|
 | Week 1-2 | Project Setup & UI Theme | ✅ Completed |
 | Week 3-4 | UI Wireframes & Static Layouts | ✅ Completed |
-| Week 5-6 | MVP Development (Timer + Journal) | ⏳ Next Phase |
-| Week 7-8 | Dashboard & Heist Features | ⏳ Planned |
-| Week 9 | AI Summary Module | ⏳ Planned |
-| Week 10 | Testing & Release | ⏳ Planned |
+| Week 5-6 | MVP Development (Timer + Journal) | ✅ Completed |
+| Week 7-8 | Dashboard & Heist Features | ✅ Completed |
+| Week 9 | AI Summary Module | ✅ Completed |
+| Week 10 | Testing & Release | ✅ Completed |
 
-**Latest Update (2025-11-03):** Week 3-4 完成！所有 UI 界面、导航系统、Room 数据库架构已实现。详见 [Week 3-4 Progress Report](./docs/Week3-4_Progress_Report.md)
+**Latest Update (2025-11-21):** All core and enhancement features completed. See docs for implementation details.
 
 ---
 
