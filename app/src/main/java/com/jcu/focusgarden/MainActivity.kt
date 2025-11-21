@@ -25,22 +25,18 @@ import com.jcu.focusgarden.service.MusicService
 import com.jcu.focusgarden.ui.navigation.FocusGardenApp
 import com.jcu.focusgarden.ui.theme.FocusGardenTheme
 import com.jcu.focusgarden.utils.SoundManager
+import com.jcu.focusgarden.viewmodel.AISummaryViewModel
 import com.jcu.focusgarden.viewmodel.DashboardViewModel
 import com.jcu.focusgarden.viewmodel.TimerViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /**
  * Main Activity
  * FocusGarden 应用的入口点
  * 
- * Week 3-4: 基础架构
- * Week 5-6 Enhancement:
- * - 添加深色/浅色主题切换功能
- * - 添加背景音乐播放功能
- * - 添加音效反馈系统
- * - 使用 DataStore 持久化偏好设置
- * - ✅ Week 5-6 MVP: 初始化 Database + Repository + ViewModel
  */
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     
     private lateinit var themePreferences: ThemePreferences
@@ -53,6 +49,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var journalRepository: JournalRepository
     private lateinit var timerViewModel: TimerViewModel
     private lateinit var dashboardViewModel: DashboardViewModel
+    // Week 9: AI Summary ViewModel
+    private lateinit var aiSummaryViewModel: AISummaryViewModel
     // Music service related
     private var musicService: MusicService? = null
     private var isMusicBound = false
@@ -97,6 +95,11 @@ class MainActivity : ComponentActivity() {
         dashboardViewModel = DashboardViewModel(
             sessionRepository = sessionRepository,
             journalRepository = journalRepository
+        )
+        
+        // Week 9: Initialize AISummaryViewModel
+        aiSummaryViewModel = AISummaryViewModel(
+            sessionRepository = sessionRepository
         )
         
         setContent {
@@ -148,7 +151,8 @@ class MainActivity : ComponentActivity() {
                         soundManager = soundManager,
                         isSoundMuted = isSoundMuted,
                         timerViewModel = timerViewModel,
-                        dashboardViewModel = dashboardViewModel
+                        dashboardViewModel = dashboardViewModel,
+                        aiSummaryViewModel = aiSummaryViewModel
                     )
                 }
             }

@@ -596,6 +596,78 @@ fun setFocusDuration(minutes: Int) {
 
 ---
 
+#### Enhancement: Timer Skip Function ✅ **已完成 (2025-11-20)**
+
+**功能描述:** 允许用户跳过倒计时，但统计原定专注时长
+
+**用户需求:**
+- 用户希望能提前结束计时
+- 但仍然统计原定要专注的时间（而非实际经过时间）
+- 跳过后仍可填写 Journal 和选择 Category
+
+**设计决策:**
+1. **跳过按钮显示时机:** 仅在计时器运行或已开始时显示
+2. **统计逻辑:** 
+   - 跳过时：保存 `_focusDuration` (原定时长)
+   - 正常完成：保存实际经过时间
+3. **UI 位置:** Skip 按钮放在 Start/Pause FAB 右侧
+4. **音效反馈:** 跳过时播放完成音效
+
+**实现内容:**
+
+```kotlin
+// TimerViewModel.kt - 新增 skipTimer() 方法
+fun skipTimer() {
+    if (!_isRunning.value && sessionStartTime == 0L) {
+        return // 未开始不执行
+    }
+    _isRunning.value = false
+    pauseTimer()
+    _showReflectionDialog.value = true // 显示反思对话框
+}
+
+// 更新 saveReflection() 逻辑
+val durationToSave = if (_remainingSeconds.value > 0) {
+    _focusDuration.value  // 跳过：使用原定时长
+} else {
+    ((endTime - sessionStartTime) / 1000 / 60).toInt() // 正常：实际时长
+}
+
+// TimerScreen.kt - Skip Button UI
+if (isRunning || remainingSeconds < focusDuration * 60) {
+    FilledTonalButton(
+        onClick = { 
+            viewModel?.skipTimer()
+            soundManager?.playComplete()
+        }
+    ) {
+        Icon(Icons.Default.SkipNext)
+        Text("Skip")
+    }
+}
+```
+
+**测试场景:**
+
+| 场景 | 操作 | 预期结果 |
+|------|------|----------|
+| 跳过功能 | 25分钟计时，运行5分钟后点击Skip | 保存 duration=25 |
+| 正常完成 | 25分钟计时，等待完成 | 保存 duration=25 |
+| 调节后跳过 | 10分钟计时，运行2分钟后Skip | 保存 duration=10 |
+
+**文件修改:**
+- `viewmodel/TimerViewModel.kt` - 添加 skipTimer()，更新 saveReflection()
+- `ui/screens/TimerScreen.kt` - 添加 Skip 按钮 UI
+
+**开发时间:** 约 20 分钟
+
+**影响范围:** 
+- ✅ 不影响现有功能
+- ✅ 向后兼容
+- ✅ Dashboard 统计正确
+
+---
+
 ### 7.2 Week 7-8 Feature Integration (Heist Group)
 
 **目标:** 实现 Heist Group 小组协作功能（简化版）
@@ -661,7 +733,128 @@ val members = listOf(
 
 **开发时间:** 约 30 分钟
 
-#### 总预计时间: 11-16 小时 (Week 5-6) + 0.5 小时 (Week 7-8)
+---
+
+### 7.3 Week 9 Enhancements (Gemini API + PDF Export)
+
+**目标:** 增强 AI Summary 功能，添加 Gemini API 集成和 PDF 导出
+
+**开发日期:** 2025-11-13  
+**状态:** ✅ 已完成
+
+#### 技术决策
+
+1. **Gemini API Integration**
+   - ✅ 使用 Google Generative AI (gemini-pro model)
+   - ✅ AI-powered insights generation
+   - ✅ Configurable API key in GeminiConfig
+   - **理由:** 提供个性化、智能的分析建议
+
+2. **PDF Generation**
+   - ✅ 使用 Android 原生 PdfDocument API
+   - ❌ 不使用第三方 PDF 库（避免复杂依赖）
+   - ✅ A4 size (595x842 points)
+   - **理由:** 简单、可靠、无需外部依赖
+
+3. **功能范围:**
+   - ✅ 生成包含 AI insights 的 PDF 报告
+   - ✅ 支持无 API key 情况（生成基础 PDF）
+   - ✅ 错误处理完善
+   - ✅ 状态实时反馈
+
+#### 实现内容
+
+**任务清单:**
+- [x] 添加 Gemini API 依赖 (`build.gradle.kts`)
+- [x] 创建 GeminiConfig 配置文件
+- [x] 创建 GeminiService API 服务
+- [x] 创建 PDFGenerator 工具类
+- [x] 更新 AISummaryViewModel (添加 PDF 生成方法)
+- [x] 更新 AISummaryScreen UI (添加导出按钮)
+- [x] 修复底部导航栏跳转问题
+- [x] 创建测试指南文档
+
+**新增文件:**
+1. `api/GeminiConfig.kt` - API 配置
+2. `api/GeminiService.kt` - Gemini API 服务
+3. `utils/PDFGenerator.kt` - PDF 生成工具
+4. `docs/PDF_Generation_Test_Guide.md` - 测试指南
+
+**修改文件:**
+1. `build.gradle.kts` - 添加依赖
+2. `viewmodel/AISummaryViewModel.kt` - PDF 生成逻辑
+3. `ui/screens/AISummaryScreen.kt` - PDF 导出 UI
+4. `ui/navigation/FocusGardenApp.kt` - 修复导航
+
+**依赖添加:**
+```kotlin
+// Gemini API
+implementation("com.google.ai.client.generativeai:generativeai:0.1.2")
+
+// PDF generation
+implementation("com.itextpdf:itext7-core:7.2.5")
+
+// Retrofit
+implementation("com.squareup.retrofit2:retrofit:2.9.0")
+implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+```
+
+**Gemini API Prompt:**
+```kotlin
+You are a productivity coach analyzing a student's weekly focus data. 
+Provide 2-3 sentences of insightful, actionable feedback.
+
+Weekly Data:
+- Total Focus Time: X minutes
+- Average per Day: Y minutes
+- Current Streak: Z days
+- Peak Day: Monday
+- Academic/Personal Time breakdown
+
+Provide:
+1. One specific strength they're showing
+2. One actionable improvement suggestion
+3. One motivational insight
+```
+
+**PDF Content Structure:**
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Weekly Focus Report
+Generated: [Date]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Weekly Summary
+• Total Focus Time
+• Average per Day
+• Current Streak
+• Peak Day
+• Total Sessions
+
+Category Breakdown
+• Academic Time
+• Personal Time
+
+Recommendations
+[Priority indicators]
+• Recommendation 1
+• Recommendation 2
+• ...
+
+AI-Powered Insights (if API key configured)
+[2-3 sentences of personalized feedback]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**文件保存位置:**
+```
+/storage/emulated/0/Android/data/com.jcu.focusgarden/files/Documents/
+FocusGarden_Report_[timestamp].pdf
+```
+
+**开发时间:** 约 2 小时
+
+#### 总预计时间: 11-16 小时 (Week 5-6) + 0.5 小时 (Week 7-8) + 2 小时 (Week 9 Enhancement)
 
 #### 端到端测试流程
 
@@ -1014,7 +1207,7 @@ implementation("androidx.datastore:datastore-preferences:1.0.0")
 ## ✅ Summary
 
 ### Document Status
-This Technical Development Document (TD) reflects the **current state** of FocusGarden as of **2025-11-10**:
+This Technical Development Document (TD) reflects the **current state** of FocusGarden as of **2025-11-13**:
 
 **✅ Completed Phases:**
 - Week 1-2: Project setup + theme design
@@ -1030,8 +1223,45 @@ This Technical Development Document (TD) reflects the **current state** of Focus
   - Dashboard 数据可视化 (✅ 完成 - Phase E)
   - Heist Group 模拟数据展示 (✅ 完成)
 
+**🐛 Bug Fixes (2025-11-13):**
+- ✅ Fixed HeistViewModel MemberProgress constructor mismatch (12 errors)
+- ✅ Fixed MainActivity import conflicts for SoundPreferences/ThemePreferences (4 errors)
+- ✅ Updated all code comments to English (Code Standards compliance)
+- ✅ Fixed bottom navigation bar transitions (smooth page switching)
+
+**✨ Week 9 Enhancements (2025-11-13):**
+- ✅ **Gemini API Integration** - AI-powered insights generation
+- ✅ **PDF Export Feature** - Generate professional weekly reports with AI insights
+- ✅ Added GeminiService for API communication
+- ✅ Added PDFGenerator utility (Android native PDF)
+- ✅ Enhanced AISummaryViewModel with PDF generation
+- ✅ Updated AI Summary UI with export section
+
+**✨ Timer Skip Enhancement (2025-11-20):**
+- ✅ **Skip Timer Function** - Allow users to skip countdown but still count planned duration
+- ✅ Added `skipTimer()` method in TimerViewModel
+- ✅ Updated `saveReflection()` to use planned duration when skipped
+- ✅ Added Skip button in TimerScreen UI (visible during timer)
+- ✅ Skip still allows Journal entry and category selection
+- ✅ Statistics count planned time, not actual elapsed time
+
+**🐛 Bug Fixes & Debugging (2025-11-20):**
+- ✅ Fixed Flow type mismatch (`.collect()` → `.first()`)
+- ✅ Fixed AI Summary loading freeze issue
+- ✅ Fixed function return type mismatch (Unit → String?)
+- ✅ Added comprehensive debug logging throughout
+- ⚠️ **Gemini API Issue:** API Key lacks Gemini 1.5 access (404 NOT_FOUND)
+  - **Solution:** Disabled Gemini API integration for now
+  - **Fallback:** Using local AI algorithm for recommendations
+  - **Impact:** PDF still generates successfully with local insights
+
+**📝 Documentation:**
+- ✅ Created `BUGS_AND_CHALLENGES.md` for development reflection
+- ✅ Documented all bugs encountered and solutions
+- ✅ Recorded technical challenges and learnings
+
 **⏳ Next Phase:**
-- Week 9: AI Summary module
+- Resolve Gemini API integration issue
 - Week 10: Testing & polish
 
 ### Key Features

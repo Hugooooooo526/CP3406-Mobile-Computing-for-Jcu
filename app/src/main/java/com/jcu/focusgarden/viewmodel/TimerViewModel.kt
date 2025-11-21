@@ -6,6 +6,8 @@ import com.jcu.focusgarden.data.local.entity.SessionEntity
 import com.jcu.focusgarden.data.local.entity.JournalEntity
 import com.jcu.focusgarden.data.repository.SessionRepository
 import com.jcu.focusgarden.data.repository.JournalRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -115,6 +117,30 @@ class TimerViewModel(
     }
     
     /**
+     * 跳过计时器（提前完成）
+     * Enhancement 2025-11-20: 允许用户跳过倒计时，但统计原定时长
+     * 
+     * 功能说明：
+     * - 立即停止计时器
+     * - 显示反思对话框
+     * - 保存时使用原定时长（_focusDuration）而不是实际经过时间
+     * - 用户仍可填写 Journal 和选择 Category
+     */
+    fun skipTimer() {
+        if (!_isRunning.value && sessionStartTime == 0L) {
+            // 计时器还未开始，不执行跳过
+            return
+        }
+        
+        // 停止计时器
+        _isRunning.value = false
+        pauseTimer()
+        
+        // 显示反思对话框（用户可填写 Journal）
+        _showReflectionDialog.value = true
+    }
+    
+    /**
      * Phase F: 设置专注时长（5-60分钟）
      * 仅在未运行时可调节
      */
@@ -149,6 +175,7 @@ class TimerViewModel(
     /**
      * 保存反思记录
      * Week 5-6: ✅ Phase B + Phase D - 保存到数据库
+     * Enhancement 2025-11-20: 支持跳过功能，统计原定时长
      * 
      * @param category 专注类别（Academic/Personal）
      * @param mood 情绪标签
@@ -158,13 +185,23 @@ class TimerViewModel(
         viewModelScope.launch {
             // Phase B: 保存 Session
             val endTime = System.currentTimeMillis()
-            val actualDuration = ((endTime - sessionStartTime) / 1000 / 60).toInt() // 分钟
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val currentDate = dateFormat.format(Date(sessionStartTime))
             
+            // Enhancement 2025-11-20: 计算保存的时长
+            // 如果是跳过（remainingSeconds > 0），使用原定时长
+            // 否则使用实际经过的时间
+            val durationToSave = if (_remainingSeconds.value > 0) {
+                // 跳过情况：使用原定时长（用户计划的时间）
+                _focusDuration.value
+            } else {
+                // 正常完成：使用实际经过的时间
+                ((endTime - sessionStartTime) / 1000 / 60).toInt()
+            }
+            
             val session = SessionEntity(
                 category = category,
-                duration = actualDuration,
+                duration = durationToSave,
                 startTime = sessionStartTime,
                 endTime = endTime,
                 date = currentDate
@@ -192,18 +229,29 @@ class TimerViewModel(
     /**
      * 跳过反思
      * Week 5-6: ✅ Phase B - 只保存 Session，不保存 Journal
+     * Enhancement 2025-11-20: 支持跳过功能，统计原定时长
      */
     fun skipReflection() {
         viewModelScope.launch {
             // Phase B: 保存 Session（不保存 Journal）
             val endTime = System.currentTimeMillis()
-            val actualDuration = ((endTime - sessionStartTime) / 1000 / 60).toInt() // 分钟
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val currentDate = dateFormat.format(Date(sessionStartTime))
             
+            // Enhancement 2025-11-20: 计算保存的时长
+            // 如果是跳过（remainingSeconds > 0），使用原定时长
+            // 否则使用实际经过的时间
+            val durationToSave = if (_remainingSeconds.value > 0) {
+                // 跳过情况：使用原定时长（用户计划的时间）
+                _focusDuration.value
+            } else {
+                // 正常完成：使用实际经过的时间
+                ((endTime - sessionStartTime) / 1000 / 60).toInt()
+            }
+            
             val session = SessionEntity(
                 category = "Academic", // 默认类别（用户跳过了选择）
-                duration = actualDuration,
+                duration = durationToSave,
                 startTime = sessionStartTime,
                 endTime = endTime,
                 date = currentDate

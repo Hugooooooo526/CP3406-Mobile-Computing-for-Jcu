@@ -3,6 +3,7 @@ package com.jcu.focusgarden.data.local.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.ForeignKey
+import androidx.room.Index
 
 /**
  * Journal Entity
@@ -19,7 +20,8 @@ import androidx.room.ForeignKey
             childColumns = ["sessionId"],
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [Index(value = ["sessionId"])]
 )
 data class JournalEntity(
     @PrimaryKey(autoGenerate = true)

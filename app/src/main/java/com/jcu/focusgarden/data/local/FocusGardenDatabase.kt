@@ -25,7 +25,7 @@ import com.jcu.focusgarden.data.local.entity.SessionEntity
         JournalEntity::class,
         GroupEntity::class
     ],
-    version = 1,
+    version = 2,  // 增加版本号：添加了 sessionId 索引
     exportSchema = false
 )
 @TypeConverters(StringListConverter::class)
@@ -46,8 +46,8 @@ abstract class FocusGardenDatabase : RoomDatabase() {
                     FocusGardenDatabase::class.java,
                     "focus_garden_database"
                 )
-                    .fallbackToDestructiveMigration()
-                    .build()
+                .fallbackToDestructiveMigration()  // 开发阶段：删除旧数据并重建
+                .build()
                 INSTANCE = instance
                 instance
             }

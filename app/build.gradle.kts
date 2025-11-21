@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -90,6 +91,22 @@ dependencies {
 
     // DataStore for preferences
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // Hilt for Dependency Injection
+    implementation("com.google.dagger:hilt-android:2.48")
+    ksp("com.google.dagger:hilt-android-compiler:2.48")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+
+    // Week 9 Enhancement: Gemini API for AI-powered PDF generation
+    // Updated to latest version for Gemini 1.5 support
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    
+    // Week 9 Enhancement: PDF generation
+    implementation("com.itextpdf:itext7-core:7.2.5")
+
+    // Retrofit for API calls (if needed)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     // Testing
     testImplementation("junit:junit:4.13.2")

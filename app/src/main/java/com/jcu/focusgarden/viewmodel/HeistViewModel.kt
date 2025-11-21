@@ -8,18 +8,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
+@HiltViewModel
+class HeistViewModel @Inject constructor(
+    private val groupRepository: GroupRepository
+) : ViewModel() {
 /**
  * Heist Group ViewModel
  * Implemented according to TD Document MVVM architecture
  * 
  * Week 3-4: Basic structure
  * Week 7-8: Simplified implementation with mock data
- */
-class HeistViewModel(
-    private val groupRepository: GroupRepository
-) : ViewModel() {
-    
+ */    
     // Group State
     private val _groupGoal = MutableStateFlow("Complete 8 Pomodoros Today")
     val groupGoal: StateFlow<String> = _groupGoal.asStateFlow()
