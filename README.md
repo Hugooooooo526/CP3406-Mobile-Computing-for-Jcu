@@ -6,18 +6,16 @@ Sarah is a university student who struggles to maintain consistent study habits 
 
 ## 0. Application Preview
 
-<!-- Screenshot Placeholders - Please replace with actual application screenshots -->
+<!-- Application Demo GIFs -->
 
-<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
-    <img src="[PLACEHOLDER: Timer Screen Screenshot]" alt="Focus Timer Interface" width="30%" />
-    <img src="[PLACEHOLDER: Dashboard Screenshot]" alt="Progress Dashboard" width="30%" />
-    <img src="[PLACEHOLDER: Journal Screenshot]" alt="Focus Journal" width="30%" />
+<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; justify-content: center;">
+    <img src="./assets/timer-demo.gif" alt="Focus Timer Interface" width="45%" />
+    <img src="./assets/journal-demo.gif" alt="Focus Journal" width="45%" />
 </div>
 
-<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
-    <img src="[PLACEHOLDER: Group Feature Screenshot]" alt="Heist Group Collaboration" width="30%" />
-    <img src="[PLACEHOLDER: AI Summary Screenshot]" alt="AI-Generated Summary" width="30%" />
-    <img src="[PLACEHOLDER: Settings Screenshot]" alt="Application Settings" width="30%" />
+<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; justify-content: center;">
+    <img src="./assets/heist-group-demo.gif" alt="Heist Group Collaboration" width="45%" />
+    <img src="./assets/ai-summary-demo.gif" alt="AI-Generated Summary" width="45%" />
 </div>
 
 ### Quick Start Guide
