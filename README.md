@@ -8,14 +8,14 @@ Sarah is a university student who struggles to maintain consistent study habits 
 
 <!-- Application Demo GIFs -->
 
-<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; justify-content: center;">
-    <img src="./assets/timer-demo.gif" alt="Focus Timer Interface" width="45%" />
-    <img src="./assets/journal-demo.gif" alt="Focus Journal" width="45%" />
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+    <img src="./assets/timer-demo.gif" alt="Focus Timer Interface" width="30%" />
+    <img src="./assets/journal-demo.gif" alt="Focus Journal" width="30%" />
 </div>
 
-<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; justify-content: center;">
-    <img src="./assets/heist-group-demo.gif" alt="Heist Group Collaboration" width="45%" />
-    <img src="./assets/ai-summary-demo.gif" alt="AI-Generated Summary" width="45%" />
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+    <img src="./assets/heist-group-demo.gif" alt="Heist Group Collaboration" width="30%" />
+    <img src="./assets/ai-summary-demo.gif" alt="AI-Generated Summary" width="30%" />
 </div>
 
 ### Quick Start Guide
